@@ -1,0 +1,325 @@
+{
+  "date": "2026-10-28",
+  "set": "golden",
+  "n_questions": 42,
+  "text_model": "gemini-3.8-flash",
+  "embed_model": "gemini-embedding-001",
+  "embed_dim": 768,
+  "top_k": 5,
+  "abstain_threshold": 0.717,
+  "corpus": {
+    "repo": "https://github.com/fastapi/fastapi.git",
+    "subdir": "docs/en/docs",
+    "commit": "79cab5bed28b24d92c185d236feb33f5783dfeb3",
+    "license": "MIT"
+  },
+  "n_chunks": 1136,
+  "retrieval": {
+    "bm25": {
+      "n": 32,
+      "hit@1": 0.6875,
+      "hit@5": 0.96875,
+      "mrr": 0.8203125,
+      "phrase@5": 0.96875
+    },
+    "dense": {
+      "n": 32,
+      "hit@1": 0.96875,
+      "hit@5": 1.0,
+      "mrr": 0.984375,
+      "phrase@5": 1.0
+    },
+    "hybrid": {
+      "n": 32,
+      "hit@1": 0.90625,
+      "hit@5": 1.0,
+      "mrr": 0.953125,
+      "phrase@5": 0.96875
+    }
+  },
+  "best_strategy": "dense",
+  "end_to_end": {
+    "strategy": "dense",
+    "n_answerable": 32,
+    "n_unanswerable": 10,
+    "answer_correct": 0.8125,
+    "citation_valid": 1.0,
+    "n_answered": 26,
+    "cites_expected_source": 0.8125,
+    "abstain_accuracy": 1.0,
+    "false_abstention": 0.1875,
+    "gate_abstentions": 15,
+    "invented_citation_answers": 0,
+    "latency_ms_p50": 4968.397500051651,
+    "latency_ms_p95": 8574.396334006451,
+    "latency_model_calls_p50": 5895.585790975019,
+    "latency_model_calls_p95": 8594.159499974921
+  },
+  "failures": [
+    {
+      "id": "g11",
+      "why": "answerable: abstained",
+      "question": "Which package does TestClient need me to install?",
+      "expected_sources": [
+        "tutorial/testing.md"
+      ],
+      "expected_phrase": "httpx",
+      "answer": "I don't know based on the documentation.",
+      "abstain_reason": "top dense similarity 0.713 below threshold 0.717",
+      "confidence": 0.7131,
+      "retrieved": [
+        [
+          "tutorial/testing.md",
+          0.7131
+        ],
+        [
+          "advanced/async-tests.md",
+          0.6762
+        ],
+        [
+          "advanced/testing-websockets.md",
+          0.6758
+        ],
+        [
+          "advanced/testing-events.md",
+          0.6701
+        ],
+        [
+          "index.md",
+          0.6574
+        ]
+      ]
+    },
+    {
+      "id": "g18",
+      "why": "answerable: abstained",
+      "question": "Is the content of a JWT encrypted?",
+      "expected_sources": [
+        "tutorial/security/oauth2-jwt.md"
+      ],
+      "expected_phrase": "not encrypted",
+      "answer": "I don't know based on the documentation.",
+      "abstain_reason": "top dense similarity 0.712 below threshold 0.717",
+      "confidence": 0.7121,
+      "retrieved": [
+        [
+          "tutorial/security/oauth2-jwt.md",
+          0.7121
+        ],
+        [
+          "tutorial/security/oauth2-jwt.md",
+          0.6661
+        ],
+        [
+          "tutorial/security/oauth2-jwt.md",
+          0.6593
+        ],
+        [
+          "tutorial/security/oauth2-jwt.md",
+          0.6449
+        ],
+        [
+          "tutorial/security/oauth2-jwt.md",
+          0.6388
+        ]
+      ]
+    },
+    {
+      "id": "g26",
+      "why": "answerable: abstained",
+      "question": "What does the version field in the API metadata represent?",
+      "expected_sources": [
+        "tutorial/metadata.md"
+      ],
+      "expected_phrase": "your own application",
+      "answer": "I don't know based on the documentation.",
+      "abstain_reason": "top dense similarity 0.709 below threshold 0.717",
+      "confidence": 0.7091,
+      "retrieved": [
+        [
+          "tutorial/metadata.md",
+          0.7091
+        ],
+        [
+          "tutorial/metadata.md",
+          0.7067
+        ],
+        [
+          "how-to/general.md",
+          0.6836
+        ],
+        [
+          "deployment/versions.md",
+          0.6581
+        ],
+        [
+          "tutorial/metadata.md",
+          0.6556
+        ]
+      ]
+    },
+    {
+      "id": "g27",
+      "why": "answerable: abstained",
+      "question": "How can an endpoint return 201 for newly created items while normally returning 200?",
+      "expected_sources": [
+        "advanced/additional-status-codes.md"
+      ],
+      "expected_phrase": "JSONResponse",
+      "answer": "I don't know based on the documentation.",
+      "abstain_reason": "top dense similarity 0.713 below threshold 0.717",
+      "confidence": 0.7131,
+      "retrieved": [
+        [
+          "advanced/additional-status-codes.md",
+          0.7131
+        ],
+        [
+          "advanced/response-change-status-code.md",
+          0.6901
+        ],
+        [
+          "tutorial/response-status-code.md",
+          0.6585
+        ],
+        [
+          "tutorial/handling-errors.md",
+          0.6482
+        ],
+        [
+          "advanced/additional-status-codes.md",
+          0.6465
+        ]
+      ]
+    },
+    {
+      "id": "g29",
+      "why": "answerable: abstained",
+      "question": "What media type do Server-Sent Events use?",
+      "expected_sources": [
+        "tutorial/server-sent-events.md"
+      ],
+      "expected_phrase": "text/event-stream",
+      "answer": "I don't know based on the documentation.",
+      "abstain_reason": "top dense similarity 0.717 below threshold 0.717",
+      "confidence": 0.7168,
+      "retrieved": [
+        [
+          "tutorial/server-sent-events.md",
+          0.7168
+        ],
+        [
+          "tutorial/server-sent-events.md",
+          0.6889
+        ],
+        [
+          "tutorial/server-sent-events.md",
+          0.6753
+        ],
+        [
+          "tutorial/server-sent-events.md",
+          0.6599
+        ],
+        [
+          "tutorial/server-sent-events.md",
+          0.6568
+        ]
+      ]
+    },
+    {
+      "id": "g32",
+      "why": "answerable: abstained",
+      "question": "Which class lets me split path operations across multiple files?",
+      "expected_sources": [
+        "tutorial/bigger-applications.md"
+      ],
+      "expected_phrase": "APIRouter",
+      "answer": "I don't know based on the documentation.",
+      "abstain_reason": "top dense similarity 0.708 below threshold 0.717",
+      "confidence": 0.7078,
+      "retrieved": [
+        [
+          "tutorial/bigger-applications.md",
+          0.7078
+        ],
+        [
+          "tutorial/bigger-applications.md",
+          0.6924
+        ],
+        [
+          "tutorial/bigger-applications.md",
+          0.689
+        ],
+        [
+          "tutorial/dependencies/global-dependencies.md",
+          0.6792
+        ],
+        [
+          "tutorial/bigger-applications.md",
+          0.6786
+        ]
+      ]
+    }
+  ],
+  "judge": {
+    "model": "gemini-3.8-flash",
+    "n": 8,
+    "verdicts": [
+      {
+        "id": "g01",
+        "verdict": "faithful",
+        "unsupported": [],
+        "raw": null
+      },
+      {
+        "id": "g04",
+        "verdict": "faithful",
+        "unsupported": [],
+        "raw": null
+      },
+      {
+        "id": "g07",
+        "verdict": "faithful",
+        "unsupported": [],
+        "raw": null
+      },
+      {
+        "id": "g10",
+        "verdict": "faithful",
+        "unsupported": [],
+        "raw": null
+      },
+      {
+        "id": "g14",
+        "verdict": "faithful",
+        "unsupported": [],
+        "raw": null
+      },
+      {
+        "id": "g17",
+        "verdict": "faithful",
+        "unsupported": [],
+        "raw": null
+      },
+      {
+        "id": "g21",
+        "verdict": "faithful",
+        "unsupported": [],
+        "raw": null
+      },
+      {
+        "id": "g24",
+        "verdict": "faithful",
+        "unsupported": [],
+        "raw": null
+      }
+    ],
+    "faithful": 8,
+    "note": "LLM judge (same model family as the generator); small sample."
+  },
+  "api": {
+    "requests": 77,
+    "retries": 0,
+    "rpm_limit_used": 20.0
+  }
+}

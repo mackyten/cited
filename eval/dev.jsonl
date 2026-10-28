@@ -11,3 +11,23 @@
 {"id": "d11", "question": "What is the capital of Australia?", "answerable": false, "close_to_corpus": false}
 {"id": "d12", "question": "How do I configure Kafka consumers in FastAPI?", "answerable": false, "close_to_corpus": false}
 {"id": "d13", "question": "How do I process Stripe payment webhooks in FastAPI?", "answerable": false, "close_to_corpus": true}
+{"id": "d14", "question": "Which common class does Cookie inherit from?", "answerable": true, "sources": ["tutorial/cookie-params.md"], "phrase": "Param"}
+{"id": "d15", "question": "From which package is Field imported when declaring model attribute validation?", "answerable": true, "sources": ["tutorial/body-fields.md"], "phrase": "pydantic"}
+{"id": "d16", "question": "In a webhook, who sends the request to whom?", "answerable": true, "sources": ["advanced/openapi-webhooks.md"], "phrase": "webhook"}
+{"id": "d17", "question": "Does hiding the docs UI in production make the API more secure?", "answerable": true, "sources": ["how-to/conditional-openapi.md"], "phrase": "security"}
+{"id": "d18", "question": "Which argument configures extra Swagger UI parameters?", "answerable": true, "sources": ["how-to/configure-swagger-ui.md"], "phrase": "swagger_ui_parameters"}
+{"id": "d19", "question": "Where do the certificates needed for HTTPS come from?", "answerable": true, "sources": ["deployment/https.md"], "phrase": "third party"}
+{"id": "d20", "question": "Which concepts should I consider when deploying a FastAPI application?", "answerable": true, "sources": ["deployment/concepts.md"], "phrase": "Replication"}
+{"id": "d21", "question": "Does FastAPI support standard Python dataclasses?", "answerable": true, "sources": ["advanced/dataclasses.md"], "phrase": "dataclasses"}
+{"id": "d22", "question": "Which two classes do I combine to receive files and form fields in one request?", "answerable": true, "sources": ["tutorial/request-forms-and-files.md"], "phrase": "Form"}
+{"id": "d23", "question": "When should I use the stream data feature instead of JSON Lines?", "answerable": true, "sources": ["advanced/stream-data.md"], "phrase": "binary"}
+{"id": "d24", "question": "What does the security tutorial use OAuth2 for between a frontend and the backend?", "answerable": true, "sources": ["tutorial/security/first-steps.md"], "phrase": "OAuth2"}
+{"id": "d25", "question": "Can I combine GraphQL with normal path operations in the same app?", "answerable": true, "sources": ["how-to/graphql.md"], "phrase": "ASGI"}
+{"id": "d26", "question": "Besides int, float, str and bool, which more complex data types can I declare, such as identifiers?", "answerable": true, "sources": ["tutorial/extra-data-types.md"], "phrase": "UUID"}
+{"id": "d27", "question": "How do I get direct access to the Request object?", "answerable": true, "sources": ["advanced/using-request-directly.md"], "phrase": "Request"}
+{"id": "d28", "question": "How do I run Django ORM migrations from a FastAPI app?", "answerable": false, "close_to_corpus": true}
+{"id": "d29", "question": "How do I configure Nginx response caching in front of FastAPI?", "answerable": false, "close_to_corpus": true}
+{"id": "d30", "question": "How do I implement two-factor authentication with TOTP codes?", "answerable": false, "close_to_corpus": true}
+{"id": "d31", "question": "How do I profile memory usage of my endpoints with py-spy?", "answerable": false, "close_to_corpus": true}
+{"id": "d32", "question": "What is the boiling point of water in Fahrenheit?", "answerable": false, "close_to_corpus": false}
+{"id": "d33", "question": "How do I build an admin dashboard for my FastAPI models?", "answerable": false, "close_to_corpus": true}

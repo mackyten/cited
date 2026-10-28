@@ -30,7 +30,7 @@ class Settings:
     burst: int = 5
     max_attempts: int = 6
     request_budget: int = 150  # refuse commands estimated above this unless --yes
-    abstain_threshold: float = 0.717  # min dense cosine of top hit; midpoint of the gap on eval/dev.jsonl (n=13)
+    abstain_threshold: float = 0.705  # min dense cosine of top hit; best balanced accuracy on eval/dev.jsonl (n=33)
 
     @property
     def corpus_dir(self) -> Path:

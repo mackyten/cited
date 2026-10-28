@@ -308,7 +308,7 @@ def _save(out: dict[str, Any], args: argparse.Namespace, best: str) -> None:
     d = Path(args.out)
     d.mkdir(parents=True, exist_ok=True)
     mode = "retrieval" if args.retrieval_only else "full"
-    path = d / f"{out['set']}-{mode}-{out['date']}.json"
+    path = d / f"{out['set']}-{mode}-{best}-thr{out['abstain_threshold']}-{out['date']}.json"
     path.write_text(json.dumps(out, indent=2, default=str))
     print(f"\nresults written to {path}")
 
