@@ -58,5 +58,5 @@ def validate_citations(answer: str, n_sources: int) -> CitationCheck:
 
 
 def is_abstention(answer: str) -> bool:
-    norm = lambda s: re.sub(r"[\W_]+", " ", s.lower()).strip()  # noqa: E731
+    norm = lambda s: re.sub(r"[\W_]+", " ", re.sub(r"['\u2019]", "", s.lower())).strip()  # noqa: E731
     return norm(ABSTAIN_SENTENCE) in norm(answer)

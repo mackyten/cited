@@ -1,0 +1,13 @@
+services:
+  cited:
+    build: .
+    image: cited
+    ports:
+      - "8000:8000"
+    environment:
+      # No value here: compose forwards the variable from your shell (or a local .env).
+      - GEMINI_API_KEY
+    volumes:
+      - ./data:/app/data
+    # eval/ is read by `cited eval`; mount it too if you want to run evals in the container.
+    restart: unless-stopped
