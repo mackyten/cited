@@ -100,11 +100,12 @@ class GeminiClient:
         self._log = log or (lambda _m: None)
         self.requests_made = 0  # real API requests only (cache hits excluded)
         self.retries = 0  # retried attempts (429/5xx)
+        self.waited_s = 0.0  # total time spent blocked in our own rate limiter
 
     # -- internals ---------------------------------------------------------------------
     def _call(self, fn: Callable[[], object]):  # type: ignore[no-untyped-def]
         def attempt():  # type: ignore[no-untyped-def]
-            self.bucket.acquire()
+            self.waited_s += self.bucket.acquire()
             self.requests_made += 1
             return fn()
 
@@ -166,15 +167,16 @@ class GeminiClient:
         if use_cache and self.cache and (raw := self.cache.get(key)) is not None:
             d = json.loads(raw)
             return GenResult(d["text"], d["pt"], d["ot"], d["ms"], cached=True)
-        t0 = time.perf_counter()
+        t0, w0 = time.perf_counter(), self.waited_s
         text, pt, ot = self._call(lambda: self.backend.generate(system, prompt))  # type: ignore[misc]
-        ms = (time.perf_counter() - t0) * 1000
-        if self.cache and use_cache:
+        # Latency excludes time spent waiting in our own limiter (not API latency).
+        ms = (time.perf_counter() - t0 - (self.waited_s - w0)) * 1000
+        if self.cache:
             self.cache.set(key, json.dumps({"text": text, "pt": pt, "ot": ot, "ms": ms}).encode())
         return GenResult(text, pt, ot, ms, cached=False)
 
     def stream(self, system: str, prompt: str) -> Iterator[str]:
         """Streaming is never cached. Rate-limited and counted as one request."""
-        self.bucket.acquire()
+        self.waited_s += self.bucket.acquire()
         self.requests_made += 1
         yield from self.backend.stream(system, prompt)

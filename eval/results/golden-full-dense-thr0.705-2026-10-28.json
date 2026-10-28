@@ -1,0 +1,120 @@
+{
+  "date": "2026-10-28",
+  "set": "golden",
+  "n_questions": 42,
+  "text_model": "gemini-3.8-flash",
+  "embed_model": "gemini-embedding-001",
+  "embed_dim": 768,
+  "top_k": 5,
+  "abstain_threshold": 0.705,
+  "corpus": {
+    "repo": "https://github.com/fastapi/fastapi.git",
+    "subdir": "docs/en/docs",
+    "commit": "79cab5bed28b24d92c185d236feb33f5783dfeb3",
+    "license": "MIT"
+  },
+  "n_chunks": 1136,
+  "retrieval": {
+    "bm25": {
+      "n": 32,
+      "hit@1": 0.6875,
+      "hit@5": 0.96875,
+      "mrr": 0.8203125,
+      "phrase@5": 0.96875
+    },
+    "dense": {
+      "n": 32,
+      "hit@1": 0.96875,
+      "hit@5": 1.0,
+      "mrr": 0.984375,
+      "phrase@5": 1.0
+    },
+    "hybrid": {
+      "n": 32,
+      "hit@1": 0.90625,
+      "hit@5": 1.0,
+      "mrr": 0.953125,
+      "phrase@5": 0.96875
+    }
+  },
+  "best_strategy": "dense",
+  "end_to_end": {
+    "strategy": "dense",
+    "n_answerable": 32,
+    "n_unanswerable": 10,
+    "answer_correct": 1.0,
+    "citation_valid": 1.0,
+    "n_answered": 32,
+    "cites_expected_source": 1.0,
+    "abstain_accuracy": 1.0,
+    "false_abstention": 0.0,
+    "gate_abstentions": 6,
+    "invented_citation_answers": 0,
+    "latency_ms_p50": 7247.180000005756,
+    "latency_ms_p95": 9238.34550002357,
+    "latency_model_calls_p50": 7286.430375010241,
+    "latency_model_calls_p95": 9250.838042004034
+  },
+  "failures": [],
+  "judge": {
+    "model": "gemini-3.8-flash",
+    "n": 8,
+    "verdicts": [
+      {
+        "id": "g01",
+        "verdict": "faithful",
+        "unsupported": [],
+        "raw": null
+      },
+      {
+        "id": "g05",
+        "verdict": "faithful",
+        "unsupported": [],
+        "raw": null
+      },
+      {
+        "id": "g09",
+        "verdict": "faithful",
+        "unsupported": [],
+        "raw": null
+      },
+      {
+        "id": "g13",
+        "verdict": "faithful",
+        "unsupported": [],
+        "raw": null
+      },
+      {
+        "id": "g17",
+        "verdict": "faithful",
+        "unsupported": [],
+        "raw": null
+      },
+      {
+        "id": "g21",
+        "verdict": "faithful",
+        "unsupported": [],
+        "raw": null
+      },
+      {
+        "id": "g25",
+        "verdict": "faithful",
+        "unsupported": [],
+        "raw": null
+      },
+      {
+        "id": "g29",
+        "verdict": "faithful",
+        "unsupported": [],
+        "raw": null
+      }
+    ],
+    "faithful": 8,
+    "note": "LLM judge (same model family as the generator); small sample."
+  },
+  "api": {
+    "requests": 56,
+    "retries": 0,
+    "rpm_limit_used": 20.0
+  }
+}

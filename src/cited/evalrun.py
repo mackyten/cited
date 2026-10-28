@@ -101,13 +101,13 @@ def judge_answer(client: GeminiClient, res: AskResult) -> dict[str, Any]:
             "raw": g.text if not d else None}
 
 
-def eval_end_to_end(pipe: Pipeline, questions: list[dict[str, Any]], strategy: str
-                    ) -> tuple[dict[str, Any], list[dict[str, Any]], list[tuple[dict[str, Any], AskResult]]]:
+def eval_end_to_end(pipe: Pipeline, questions: list[dict[str, Any]], strategy: str,
+                    live: bool = False) -> tuple[dict[str, Any], list[dict[str, Any]], list[tuple[dict[str, Any], AskResult]]]:
     results: list[tuple[dict[str, Any], AskResult]] = []
-    pipe.live_queries = True
+    pipe.live = live
     for q in questions:
         results.append((q, pipe.ask(q["question"], strategy, pipe.s.top_k)))
-    pipe.live_queries = False
+    pipe.live = False
 
     ans = [(q, r) for q, r in results if q["answerable"]]
     una = [(q, r) for q, r in results if not q["answerable"]]
@@ -255,15 +255,15 @@ def run_eval_command(args: argparse.Namespace, settings: Settings, client: Gemin
         conf = pipe._confidence(got)  # noqa: SLF001
         if pipe._gate(got, conf):  # noqa: SLF001
             continue
-        if not client.is_generation_cached(SYSTEM_PROMPT, format_prompt(q["question"], [r.chunk for r in got])):
+        if args.live or not client.is_generation_cached(SYSTEM_PROMPT, format_prompt(q["question"], [r.chunk for r in got])):
             pending += 1
-    est2 = len(questions) + pending + args.judge
-    enforce_budget(f"eval end-to-end ({best}): {len(questions)} live query embeds + "
+    est2 = (len(questions) if args.live else 0) + pending + args.judge
+    enforce_budget(f"eval end-to-end ({best}{', live' if args.live else ''}): "
                    f"{pending} generations + {args.judge} judge calls", est2, budget, args.yes, echo)
 
     req0, retries0 = client.requests_made, client.retries
-    metrics, failures, results = eval_end_to_end(pipe, questions, best)
-    out["end_to_end"] = {"strategy": best, **metrics}
+    metrics, failures, results = eval_end_to_end(pipe, questions, best, args.live)
+    out["end_to_end"] = {"strategy": best, "live": args.live, **metrics}
     out["failures"] = failures
     echo(f"\n### End-to-end ({best}, top_k={settings.top_k}, abstain_threshold={settings.abstain_threshold})\n")
     echo(_table(["metric", "value"], [
@@ -273,7 +273,7 @@ def run_eval_command(args: argparse.Namespace, settings: Settings, client: Gemin
         ["abstention accuracy on unanswerable", f"{_pct(metrics['abstain_accuracy'])} of {metrics['n_unanswerable']}"],
         ["false abstention on answerable", _pct(metrics["false_abstention"])],
         ["abstained by retrieval gate (no model call)", str(metrics["gate_abstentions"])],
-        ["latency p50 / p95 (all questions)", f"{metrics['latency_ms_p50']:.0f} / {metrics['latency_ms_p95']:.0f} ms"],
+        ["latency p50 / p95, excl. client-side limiter wait (all questions)", f"{metrics['latency_ms_p50']:.0f} / {metrics['latency_ms_p95']:.0f} ms"],
         ["latency p50 / p95 (questions that called the model)",
          f"{metrics['latency_model_calls_p50']:.0f} / {metrics['latency_model_calls_p95']:.0f} ms"],
     ]))
@@ -308,7 +308,8 @@ def _save(out: dict[str, Any], args: argparse.Namespace, best: str) -> None:
     d = Path(args.out)
     d.mkdir(parents=True, exist_ok=True)
     mode = "retrieval" if args.retrieval_only else "full"
-    path = d / f"{out['set']}-{mode}-{best}-thr{out['abstain_threshold']}-{out['date']}.json"
+    live = "-live" if getattr(args, "live", False) else ""
+    path = d / f"{out['set']}-{mode}-{best}-thr{out['abstain_threshold']}{live}-{out['date']}.json"
     path.write_text(json.dumps(out, indent=2, default=str))
     print(f"\nresults written to {path}")
 

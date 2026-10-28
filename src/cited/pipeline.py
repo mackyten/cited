@@ -56,10 +56,10 @@ class Pipeline:
     def __init__(self, index: Index, client: GeminiClient, settings: Settings) -> None:
         self.index, self.client, self.s = index, client, settings
         self._retrievers: dict[str, Retriever] = {}
-        self.live_queries = False  # eval sets this to time uncached query embeddings
+        self.live = False  # eval --live: bypass cache reads so latency reflects real API calls
 
     def embed_query(self, q: str) -> np.ndarray:
-        return self.client.embed([q], "RETRIEVAL_QUERY", use_cache=not self.live_queries)[0]
+        return self.client.embed([q], "RETRIEVAL_QUERY", use_cache=not self.live)[0]
 
     def retriever(self, strategy: str) -> Retriever:
         if strategy not in self._retrievers:
@@ -86,7 +86,8 @@ class Pipeline:
 
     def _finish(self, question: str, strategy: str, retrieved: list[RetrievedChunk],
                 conf: float | None, answer: str, t0: float, *, abstain_reason: str | None,
-                cached: bool, usage: dict[str, int], latency_ms: float | None = None) -> AskResult:
+                cached: bool, usage: dict[str, int], latency_ms: float | None = None,
+                wait0: float = 0.0) -> AskResult:
         check: CitationCheck = validate_citations(answer, len(retrieved))
         abstained = abstain_reason is not None or is_abstention(answer)
         by_n = {r.n: r for r in retrieved}
@@ -94,23 +95,24 @@ class Pipeline:
                   "url": by_n[n].chunk.url, "chunk_id": by_n[n].chunk.id} for n in check.valid]
         return AskResult(question, strategy, answer, abstained, abstain_reason, cites,
                          check.invented, retrieved,
-                         latency_ms if latency_ms is not None else (time.perf_counter() - t0) * 1000,
+                         latency_ms if latency_ms is not None
+                         else (time.perf_counter() - t0 - (self.client.waited_s - wait0)) * 1000,
                          conf, cached, usage)
 
     def ask(self, question: str, strategy: str = "hybrid", top_k: int | None = None) -> AskResult:
-        t0 = time.perf_counter()
+        t0, w0 = time.perf_counter(), self.client.waited_s
         retrieved = self.retrieve(question, strategy, top_k or self.s.top_k)
         conf = self._confidence(retrieved)
         if reason := self._gate(retrieved, conf):
             return self._finish(question, strategy, retrieved, conf, ABSTAIN_SENTENCE, t0,
-                                abstain_reason=reason, cached=False, usage={})
+                                abstain_reason=reason, cached=False, usage={}, wait0=w0)
         prompt = format_prompt(question, [r.chunk for r in retrieved])
-        g = self.client.generate(SYSTEM_PROMPT, prompt)
+        g = self.client.generate(SYSTEM_PROMPT, prompt, use_cache=not self.live)
         # Cached responses report the original call's latency plus this run's retrieval time.
-        retrieval_ms = (time.perf_counter() - t0) * 1000
+        retrieval_ms = (time.perf_counter() - t0 - (self.client.waited_s - w0)) * 1000
         lat = (retrieval_ms + g.latency_ms) if g.cached else None
         return self._finish(question, strategy, retrieved, conf, g.text.strip(), t0,
-                            abstain_reason=None, cached=g.cached, latency_ms=lat,
+                            abstain_reason=None, cached=g.cached, latency_ms=lat, wait0=w0,
                             usage={"prompt_tokens": g.prompt_tokens, "output_tokens": g.output_tokens})
 
     def ask_stream(self, question: str, strategy: str = "hybrid",

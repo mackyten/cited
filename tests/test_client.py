@@ -103,3 +103,18 @@ def test_genai_backend_does_not_retry_daily_quota() -> None:
     assert be.is_retryable(ApiError(503)) is True
     assert be.is_retryable(ApiError(400)) is False
     assert issubclass(QuotaExhausted, RuntimeError)
+
+
+def test_limiter_wait_is_excluded_from_reported_latency(settings) -> None:  # type: ignore[no-untyped-def]
+    import time as _t
+
+    be = FakeBackend()
+    # Real (tiny) sleeps so the elapsed time is measurable: 1 token capacity, ~0.2s refill.
+    bucket = TokenBucket(rate_per_min=300, capacity=1)
+    c = GeminiClient(be, settings, DiskCache(":memory:"), bucket=bucket, sleep=lambda s: None)
+    c.generate("s", "a")
+    t0 = _t.perf_counter()
+    r = c.generate("s", "b")  # must wait ~0.2s for a token
+    total_ms = (_t.perf_counter() - t0) * 1000
+    assert c.waited_s > 0.1 and total_ms > 150
+    assert r.latency_ms < 50  # the fake backend is instant; the wait is not counted

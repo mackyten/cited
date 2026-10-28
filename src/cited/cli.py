@@ -49,6 +49,8 @@ def build_parser() -> argparse.ArgumentParser:
                    help="end-to-end strategy (default: best MRR)")
     e.add_argument("--judge", type=int, default=0, metavar="N",
                    help="LLM-judge faithfulness on N sampled answerable questions")
+    e.add_argument("--live", action="store_true",
+                   help="bypass cache reads for end-to-end calls (honest latency, run-to-run variance)")
     e.add_argument("--tune", action="store_true", help="suggest an abstention threshold (use with --set dev)")
     e.add_argument("--out", default="eval/results", help="directory for result files")
     _add_budget_args(e)

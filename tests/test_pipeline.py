@@ -38,3 +38,12 @@ def test_stream_yields_retrieved_tokens_done(pipeline) -> None:  # type: ignore[
     assert [e["event"] for e in evs] == ["retrieved", "token", "token", "done"]
     assert evs[-1]["data"]["answer"] == "FastAPI uses Pydantic [1]."
     assert evs[-1]["data"]["citations"][0]["n"] == 1
+
+
+def test_live_mode_bypasses_generation_cache(pipeline, backend) -> None:  # type: ignore[no-untyped-def]
+    pipeline.ask("Pydantic request body model", "bm25", 3)
+    pipeline.ask("Pydantic request body model", "bm25", 3)
+    assert backend.generate_calls == 1  # second call served from the cache
+    pipeline.live = True
+    r = pipeline.ask("Pydantic request body model", "bm25", 3)
+    assert backend.generate_calls == 2 and not r.cached
