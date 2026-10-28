@@ -56,9 +56,10 @@ class Pipeline:
     def __init__(self, index: Index, client: GeminiClient, settings: Settings) -> None:
         self.index, self.client, self.s = index, client, settings
         self._retrievers: dict[str, Retriever] = {}
+        self.live_queries = False  # eval sets this to time uncached query embeddings
 
     def embed_query(self, q: str) -> np.ndarray:
-        return self.client.embed([q], "RETRIEVAL_QUERY")[0]
+        return self.client.embed([q], "RETRIEVAL_QUERY", use_cache=not self.live_queries)[0]
 
     def retriever(self, strategy: str) -> Retriever:
         if strategy not in self._retrievers:

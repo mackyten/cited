@@ -99,6 +99,7 @@ class GeminiClient:
         self._sleep = sleep
         self._log = log or (lambda _m: None)
         self.requests_made = 0  # real API requests only (cache hits excluded)
+        self.retries = 0  # retried attempts (429/5xx)
 
     # -- internals ---------------------------------------------------------------------
     def _call(self, fn: Callable[[], object]):  # type: ignore[no-untyped-def]
@@ -108,6 +109,7 @@ class GeminiClient:
             return fn()
 
         def note(n: int, e: Exception, d: float) -> None:
+            self.retries += 1
             self._log(f"retry {n + 1} in {d:.1f}s after {type(e).__name__}")
 
         return retry_call(attempt, is_retryable=self.backend.is_retryable,
@@ -127,12 +129,15 @@ class GeminiClient:
             return len(set(texts))
         return len({t for t in texts if self._emb_key(t, task) not in self.cache})
 
-    def embed(self, texts: Sequence[str], task: str) -> np.ndarray:
-        """Unit-normalised float32 vectors. Cached per text, written after every batch (resumable)."""
+    def embed(self, texts: Sequence[str], task: str, *, use_cache: bool = True) -> np.ndarray:
+        """Unit-normalised float32 vectors. Cached per text, written after every batch (resumable).
+
+        use_cache=False skips cache reads (results are still stored); used to time live queries.
+        """
         out: dict[str, np.ndarray] = {}
         missing: list[str] = []
         for t in dict.fromkeys(texts):
-            raw = self.cache.get(self._emb_key(t, task)) if self.cache else None
+            raw = self.cache.get(self._emb_key(t, task)) if (self.cache and use_cache) else None
             if raw is not None:
                 out[t] = np.frombuffer(raw, dtype=np.float32)
             else:

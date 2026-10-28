@@ -94,8 +94,12 @@ class DenseRetriever:
     def __init__(self, vectors: np.ndarray, embed_query: Callable[[str], np.ndarray]) -> None:
         self.vectors, self.embed_query = vectors, embed_query
 
+    def scores(self, query: str) -> np.ndarray:
+        """Cosine similarity to every chunk (vectors are unit-norm). One query embedding."""
+        return self.vectors @ self.embed_query(query)
+
     def search(self, query: str, k: int) -> list[Hit]:
-        sims = self.vectors @ self.embed_query(query)
+        sims = self.scores(query)
         return [Hit(i, float(sims[i]), float(sims[i])) for i in _top(sims, k)]
 
 
@@ -117,13 +121,10 @@ class HybridRetriever:
 
     def search(self, query: str, k: int) -> list[Hit]:
         sp = self.sparse.search(query, self.depth)
-        de = self.dense.search(query, self.depth)
-        dense_score = {h.index: h.dense for h in de}
-        fused = rrf([[h.index for h in sp], [h.index for h in de]], self.rrf_k)
+        sims = self.dense.scores(query)  # single query embedding; also feeds the abstention gate
+        fused = rrf([[h.index for h in sp], _top(sims, self.depth)], self.rrf_k)
         order = sorted(fused, key=lambda i: (-fused[i], i))[:k]
-        # Dense cosine for every returned chunk (needed for the abstention gate).
-        sims = self.dense.vectors @ self.dense.embed_query(query)
-        return [Hit(i, fused[i], float(dense_score.get(i, sims[i]))) for i in order]
+        return [Hit(i, fused[i], float(sims[i])) for i in order]
 
 
 STRATEGIES = ("bm25", "dense", "hybrid")
