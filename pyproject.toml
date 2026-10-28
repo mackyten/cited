@@ -1,0 +1,30 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "cited"
+version = "0.1.0"
+description = "Grounded Q&A over technical docs with Gemini: hybrid retrieval, citations, abstention, and measured evals."
+readme = "README.md"
+license = { text = "MIT" }
+requires-python = ">=3.11"
+dependencies = [
+    "google-genai>=1.0",
+    "numpy>=1.26",
+    "fastapi>=0.110",
+    "uvicorn>=0.29",
+]
+
+[project.optional-dependencies]
+dev = ["pytest>=8", "httpx>=0.27"]
+
+[project.scripts]
+cited = "cited.cli:main"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/cited"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+markers = ["live: calls the real Gemini API (skipped when no key is set)"]

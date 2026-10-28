@@ -1,0 +1,8 @@
+.env
+.venv/
+__pycache__/
+*.egg-info/
+.pytest_cache/
+dist/
+# downloaded corpus, built index and caches (all regenerable)
+data/
