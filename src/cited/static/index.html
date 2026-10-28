@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>cited</title>
+<style>
+  body { font: 16px/1.5 system-ui, sans-serif; max-width: 46rem; margin: 2rem auto; padding: 0 1rem; color: #1a1a1a; }
+  form { display: flex; gap: .5rem; }
+  input { flex: 1; padding: .6rem; font: inherit; }
+  button { padding: .6rem 1rem; font: inherit; }
+  #answer { white-space: pre-wrap; margin: 1.25rem 0; }
+  .src { font-size: .85rem; color: #444; margin: .25rem 0; }
+  .muted { color: #777; font-size: .85rem; }
+</style>
+</head>
+<body>
+<h1>cited</h1>
+<p class="muted">Grounded Q&amp;A over the FastAPI docs. Every answer is cited, or abstains.</p>
+<form id="f"><input id="q" placeholder="Ask about FastAPI..." autofocus><button>Ask</button></form>
+<div id="answer"></div>
+<div id="sources"></div>
+<script>
+const $ = (id) => document.getElementById(id);
+$("f").addEventListener("submit", async (e) => {
+  e.preventDefault();
+  $("answer").textContent = ""; $("sources").replaceChildren();
+  const res = await fetch("/ask/stream", { method: "POST", headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ question: $("q").value }) });
+  const reader = res.body.getReader(), dec = new TextDecoder();
+  let buf = "";
+  for (;;) {
+    const { done, value } = await reader.read();
+    if (done) break;
+    buf += dec.decode(value, { stream: true });
+    let i;
+    while ((i = buf.indexOf("\n\n")) >= 0) {
+      const raw = buf.slice(0, i); buf = buf.slice(i + 2);
+      const ev = /^event: (.*)$/m.exec(raw)?.[1], data = JSON.parse(/^data: (.*)$/m.exec(raw)[1]);
+      if (ev === "token") $("answer").textContent += data;
+      if (ev === "done") for (const c of data.citations) {
+        const p = document.createElement("div"); p.className = "src";
+        const a = document.createElement("a"); a.href = c.url; a.textContent = c.source + " > " + c.heading;
+        p.append("[" + c.n + "] ", a); $("sources").append(p);
+      }
+    }
+  }
+});
+</script>
+</body>
+</html>
