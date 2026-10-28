@@ -1,0 +1,13 @@
+{"id": "d01", "question": "What does the __name__ == \"__main__\" check do in a FastAPI file?", "answerable": true, "sources": ["tutorial/debugging.md"], "phrase": "imports"}
+{"id": "d02", "question": "Why create separate input and output models for a user that has a password?", "answerable": true, "sources": ["tutorial/extra-models.md"], "phrase": "password"}
+{"id": "d03", "question": "What does a TLS Termination Proxy do?", "answerable": true, "sources": ["deployment/https.md"], "phrase": "TLS Termination Proxy"}
+{"id": "d04", "question": "Which middleware redirects incoming HTTP requests to HTTPS?", "answerable": true, "sources": ["advanced/middleware.md"], "phrase": "HTTPSRedirectMiddleware"}
+{"id": "d05", "question": "How can I set cookies without returning a Response object directly?", "answerable": true, "sources": ["advanced/response-cookies.md"], "phrase": "temporary"}
+{"id": "d06", "question": "How are underscores in header parameter names handled?", "answerable": true, "sources": ["tutorial/header-params.md"], "phrase": "hyphen"}
+{"id": "d07", "question": "How do I test a WebSocket endpoint?", "answerable": true, "sources": ["advanced/testing-websockets.md"], "phrase": "TestClient"}
+{"id": "d08", "question": "Do I need to create or activate a virtual environment myself when using uv?", "answerable": true, "sources": ["virtual-environments.md"], "phrase": "automatically"}
+{"id": "d09", "question": "How do I train a neural network with PyTorch?", "answerable": false, "close_to_corpus": false}
+{"id": "d10", "question": "How do I add gRPC support to a FastAPI service?", "answerable": false, "close_to_corpus": true}
+{"id": "d11", "question": "What is the capital of Australia?", "answerable": false, "close_to_corpus": false}
+{"id": "d12", "question": "How do I configure Kafka consumers in FastAPI?", "answerable": false, "close_to_corpus": false}
+{"id": "d13", "question": "How do I process Stripe payment webhooks in FastAPI?", "answerable": false, "close_to_corpus": true}

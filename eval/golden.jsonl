@@ -1,0 +1,42 @@
+{"id": "g01", "question": "What kind of HTTP request does the browser send first to check whether a cross-origin call is allowed?", "answerable": true, "sources": ["tutorial/cors.md"], "phrase": "OPTIONS"}
+{"id": "g02", "question": "If I set the allowed origins list to a wildcard, which kinds of communication are still excluded?", "answerable": true, "sources": ["tutorial/cors.md"], "phrase": "Cookies"}
+{"id": "g03", "question": "How do I schedule a function to run after the response has been sent to the client?", "answerable": true, "sources": ["tutorial/background-tasks.md"], "phrase": "add_task"}
+{"id": "g04", "question": "What does it mean to mount a sub-application at a path?", "answerable": true, "sources": ["tutorial/static-files.md", "advanced/sub-applications.md"], "phrase": "independent"}
+{"id": "g05", "question": "What encoding do HTML forms normally use to send data, as opposed to JSON?", "answerable": true, "sources": ["tutorial/request-forms.md"], "phrase": "application/x-www-form-urlencoded"}
+{"id": "g06", "question": "Why is UploadFile better than bytes when receiving large files?", "answerable": true, "sources": ["tutorial/request-files.md"], "phrase": "spooled"}
+{"id": "g07", "question": "Is status_code a parameter of the path operation function or of something else?", "answerable": true, "sources": ["tutorial/response-status-code.md"], "phrase": "decorator"}
+{"id": "g08", "question": "How does jsonable_encoder represent datetime objects?", "answerable": true, "sources": ["tutorial/encoder.md"], "phrase": "ISO"}
+{"id": "g09", "question": "Which exception class should I raise to send an HTTP error response to the client?", "answerable": true, "sources": ["tutorial/handling-errors.md"], "phrase": "HTTPException"}
+{"id": "g10", "question": "How do I create a middleware in FastAPI?", "answerable": true, "sources": ["tutorial/middleware.md"], "phrase": "middleware(\"http\")"}
+{"id": "g11", "question": "Which package does TestClient need me to install?", "answerable": true, "sources": ["tutorial/testing.md"], "phrase": "httpx"}
+{"id": "g12", "question": "How do I run code once before the app starts receiving requests and once at shutdown?", "answerable": true, "sources": ["advanced/events.md"], "phrase": "lifespan"}
+{"id": "g13", "question": "Which option tells fastapi run which IP addresses to trust for proxy forwarded headers?", "answerable": true, "sources": ["advanced/behind-a-proxy.md"], "phrase": "--forwarded-allow-ips"}
+{"id": "g14", "question": "How do I start the server with several worker processes?", "answerable": true, "sources": ["deployment/server-workers.md"], "phrase": "--workers"}
+{"id": "g15", "question": "When running on Kubernetes, how many Uvicorn processes should I run per container?", "answerable": true, "sources": ["deployment/server-workers.md", "deployment/docker.md"], "phrase": "single"}
+{"id": "g16", "question": "What is the difference between a container and a container image?", "answerable": true, "sources": ["deployment/docker.md"], "phrase": "static"}
+{"id": "g17", "question": "Which command runs the app in production with the FastAPI CLI?", "answerable": true, "sources": ["fastapi-cli.md"], "phrase": "fastapi run"}
+{"id": "g18", "question": "Is the content of a JWT encrypted?", "answerable": true, "sources": ["tutorial/security/oauth2-jwt.md"], "phrase": "not encrypted"}
+{"id": "g19", "question": "Which Python library does the tutorial use to generate and verify JWT tokens?", "answerable": true, "sources": ["tutorial/security/oauth2-jwt.md"], "phrase": "PyJWT"}
+{"id": "g20", "question": "Which response header must accompany a 401 in HTTP Basic auth so the browser asks for credentials?", "answerable": true, "sources": ["advanced/security/http-basic-auth.md"], "phrase": "WWW-Authenticate"}
+{"id": "g21", "question": "Which decorator parameter lets me declare which Response class to use?", "answerable": true, "sources": ["advanced/custom-response.md"], "phrase": "response_class"}
+{"id": "g22", "question": "Which library does the SQL databases tutorial use that is built on top of SQLAlchemy and Pydantic?", "answerable": true, "sources": ["tutorial/sql-databases.md"], "phrase": "SQLModel"}
+{"id": "g23", "question": "Which package do I need in order to mount a Flask app inside FastAPI?", "answerable": true, "sources": ["advanced/wsgi.md"], "phrase": "a2wsgi"}
+{"id": "g24", "question": "Which template engine is the common choice with FastAPI and which dependency do I add?", "answerable": true, "sources": ["advanced/templates.md"], "phrase": "jinja2"}
+{"id": "g25", "question": "Which contextlib decorators define functions that are valid as dependencies with yield?", "answerable": true, "sources": ["tutorial/dependencies/dependencies-with-yield.md"], "phrase": "contextmanager"}
+{"id": "g26", "question": "What does the version field in the API metadata represent?", "answerable": true, "sources": ["tutorial/metadata.md"], "phrase": "your own application"}
+{"id": "g27", "question": "How can an endpoint return 201 for newly created items while normally returning 200?", "answerable": true, "sources": ["advanced/additional-status-codes.md"], "phrase": "JSONResponse"}
+{"id": "g28", "question": "Why are FastAPI versions still 0.x.x?", "answerable": true, "sources": ["deployment/versions.md"], "phrase": "breaking changes"}
+{"id": "g29", "question": "What media type do Server-Sent Events use?", "answerable": true, "sources": ["tutorial/server-sent-events.md"], "phrase": "text/event-stream"}
+{"id": "g30", "question": "How can I limit a query parameter to at most 50 characters?", "answerable": true, "sources": ["tutorial/query-params-str-validations.md"], "phrase": "max_length"}
+{"id": "g31", "question": "When should I declare my path operation functions with async def?", "answerable": true, "sources": ["async.md"], "phrase": "await"}
+{"id": "g32", "question": "Which class lets me split path operations across multiple files?", "answerable": true, "sources": ["tutorial/bigger-applications.md"], "phrase": "APIRouter"}
+{"id": "g33", "question": "How do I enable Apollo Federation with FastAPI's GraphQL support?", "answerable": false, "close_to_corpus": true}
+{"id": "g34", "question": "How do I deploy FastAPI to Kubernetes using a Helm chart?", "answerable": false, "close_to_corpus": true}
+{"id": "g35", "question": "How do I add per-client rate limiting to my FastAPI endpoints?", "answerable": false, "close_to_corpus": true}
+{"id": "g36", "question": "What is the default maximum upload size for files in FastAPI?", "answerable": false, "close_to_corpus": true}
+{"id": "g37", "question": "How do I send an email over SMTP from a FastAPI background task?", "answerable": false, "close_to_corpus": true}
+{"id": "g38", "question": "How do I expose Prometheus metrics from a FastAPI app?", "answerable": false, "close_to_corpus": false}
+{"id": "g39", "question": "How do I set up Sentry error tracking in FastAPI?", "answerable": false, "close_to_corpus": false}
+{"id": "g40", "question": "How do I write Terraform to provision infrastructure for FastAPI?", "answerable": false, "close_to_corpus": false}
+{"id": "g41", "question": "Who won the 2022 FIFA World Cup?", "answerable": false, "close_to_corpus": false}
+{"id": "g42", "question": "What is the syntax for list comprehensions in Rust?", "answerable": false, "close_to_corpus": false}
