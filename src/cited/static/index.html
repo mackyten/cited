@@ -306,7 +306,11 @@ async function ask(q) {
   try {
     const res = await fetch("/ask/stream", { method: "POST", signal: controller.signal, headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ question: q, strategy: "dense", top_k: 5 }) });
-    if (!res.ok) throw new Error(res.status + " " + (res.statusText || "request failed"));
+    if (!res.ok) {
+      let detail = "";
+      try { const j = await res.json(); if (typeof j.detail === "string") detail = j.detail; } catch (e) { /* not JSON */ }
+      throw new Error(detail || res.status + " " + (res.statusText || "request failed"));
+    }
     const reader = res.body.getReader(), dec = new TextDecoder();
     let buf = "";
     for (;;) {

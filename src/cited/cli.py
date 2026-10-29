@@ -112,10 +112,12 @@ def _dispatch(args: argparse.Namespace, settings: Settings) -> int:
         import uvicorn
 
         from cited.api import create_app
+        from cited.guard import guard_from_env
         from cited.pipeline import Pipeline
         from cited.store import Index
 
         pipe = Pipeline(Index.load(settings.index_dir), make_client(settings), settings)
-        uvicorn.run(create_app(pipe), host=args.host, port=args.port)
+        guard, hops = guard_from_env()
+        uvicorn.run(create_app(pipe, guard, hops), host=args.host, port=args.port)
         return 0
     return 1
