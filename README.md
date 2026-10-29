@@ -143,9 +143,22 @@ The key is passed through the environment and is never written into the image. *
 
 `cited serve` also serves a single-page UI at `/` (plain HTML, CSS and JS, no build step) that streams answers from `POST /ask/stream`. Citation chips jump to and highlight their source card, unused passages are listed separately, and a low-confidence question shows a clear "No answer" state. The design follows an external design-system mockup (Barlow type, blueprint frames). Fonts are self-hosted under `src/cited/static/fonts` (SIL Open Font License, see the notice there). Not tested: phone-width screens or browsers other than Chrome.
 
+## Deploying a public demo
+
+A public endpoint spends the deployer's free-tier quota, so `cited serve` has an optional abuse guard (`src/cited/guard.py`). It is off unless `CITED_DEMO_GLOBAL_PER_DAY` is set. When on, it caps questions per IP per minute and per day, and caps total questions per day (reset at midnight Pacific, when the Gemini free-tier quota resets). Over-limit requests get a `429` with `Retry-After` and a message the page shows. `/health` is never limited. Counters live in memory, so run one instance.
+
+| variable | default | meaning |
+|---|---|---|
+| `CITED_DEMO_GLOBAL_PER_DAY` | unset (guard off) | total questions per day |
+| `CITED_DEMO_IP_PER_MIN` | 4 | questions per IP per minute |
+| `CITED_DEMO_IP_PER_DAY` | 20 | questions per IP per 24 hours |
+| `CITED_TRUSTED_HOPS` | 1 | proxies you control, so the real IP is read from `X-Forwarded-For` |
+
+`deploy/cloudrun.sh` deploys to Google Cloud Run with `deploy/Dockerfile`, which bakes in the prebuilt index. The key is stored in Secret Manager and injected as `GEMINI_API_KEY`; it is never in the image or the repo. Cloud Run needs a billing-enabled project. Verified: the guard's unit tests and a real local server returning `429`. Not verified: the container build and the Cloud Run deployment itself.
+
 ## Tests and CI
 
-`pytest -m "not live"` runs 55 offline tests with fake clients: chunking, BM25, rank fusion, the rate limiter and backoff (injected clock), the cache and resumable embedding, citation validation, abstention, the pipeline, and the API including SSE. `tests/test_live.py` is marked `live` and skipped when no key is present. The GitHub Actions workflow runs the offline tests on push and needs no key.
+`pytest -m "not live"` runs 62 offline tests with fake clients: chunking, BM25, rank fusion, the rate limiter and backoff (injected clock), the cache and resumable embedding, citation validation, abstention, the pipeline, the demo abuse guard, and the API including SSE. `tests/test_live.py` is marked `live` and skipped when no key is present. The GitHub Actions workflow runs the offline tests on push and needs no key.
 
 ## Limitations
 
