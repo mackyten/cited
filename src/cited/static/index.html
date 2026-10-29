@@ -5,47 +5,259 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>cited</title>
 <style>
-  body { font: 16px/1.5 system-ui, sans-serif; max-width: 46rem; margin: 2rem auto; padding: 0 1rem; color: #1a1a1a; }
+  :root {
+    --bg: #fafaf9; --surface: #ffffff; --text: #1c1917; --muted: #78716c; --border: #e7e5e4;
+    --accent: #4f46e5; --accent-soft: #eef2ff; --warn-bg: #fffbeb; --warn-border: #fcd34d; --warn-text: #92400e;
+    --err-bg: #fef2f2; --err-text: #b91c1c; --code-bg: #f5f5f4;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #151413; --surface: #1e1d1b; --text: #f5f5f4; --muted: #a8a29e; --border: #2e2c29;
+      --accent: #a5b4fc; --accent-soft: #26264a; --warn-bg: #2a2410; --warn-border: #6b5a1a; --warn-text: #fcd34d;
+      --err-bg: #2a1515; --err-text: #fca5a5; --code-bg: #262422;
+    }
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--text);
+    font: 16px/1.6 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
+  main { max-width: 46rem; margin: 0 auto; padding: 3rem 1.25rem 4rem; }
+  header { margin-bottom: 1.75rem; }
+  h1 { margin: 0; font-size: 1.75rem; letter-spacing: -0.02em; }
+  h1 span { color: var(--accent); }
+  .tag { margin: .25rem 0 0; color: var(--muted); font-size: .95rem; }
+
   form { display: flex; gap: .5rem; }
-  input { flex: 1; padding: .6rem; font: inherit; }
-  button { padding: .6rem 1rem; font: inherit; }
-  #answer { white-space: pre-wrap; margin: 1.25rem 0; }
-  .src { font-size: .85rem; color: #444; margin: .25rem 0; }
-  .muted { color: #777; font-size: .85rem; }
+  input[type=text] { flex: 1; min-width: 0; padding: .8rem 1rem; font: inherit; color: inherit;
+    background: var(--surface); border: 1px solid var(--border); border-radius: .6rem; }
+  input[type=text]:focus { outline: 2px solid var(--accent); outline-offset: 1px; }
+  button { padding: .8rem 1.25rem; font: inherit; font-weight: 600; color: #fff; background: var(--accent);
+    border: 0; border-radius: .6rem; cursor: pointer; }
+  @media (prefers-color-scheme: dark) { button { color: #151413; } }
+  button:disabled { opacity: .55; cursor: progress; }
+  button:focus-visible, .chip:focus-visible, a:focus-visible, summary:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+  .chips { display: flex; flex-wrap: wrap; gap: .5rem; margin-top: .9rem; }
+  .chip { padding: .35rem .75rem; font-size: .85rem; font-weight: 400; color: var(--muted); background: transparent;
+    border: 1px solid var(--border); border-radius: 999px; cursor: pointer; }
+  .chip:hover { color: var(--text); border-color: var(--accent); }
+
+  #status { margin-top: 1.5rem; color: var(--muted); font-size: .9rem; min-height: 1.4em; }
+  #status.busy::before { content: ""; display: inline-block; width: .7em; height: .7em; margin-right: .5em;
+    border: 2px solid var(--border); border-top-color: var(--accent); border-radius: 50%; animation: spin .8s linear infinite; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  @media (prefers-reduced-motion: reduce) { #status.busy::before { animation: none; } }
+
+  .card { margin-top: 1rem; padding: 1.25rem 1.4rem; background: var(--surface); border: 1px solid var(--border); border-radius: .8rem; }
+  .card.abstain { background: var(--warn-bg); border-color: var(--warn-border); color: var(--warn-text); }
+  .card.error { background: var(--err-bg); border-color: var(--err-text); color: var(--err-text); }
+  #answer p { margin: 0 0 .75rem; }
+  #answer p:last-child { margin-bottom: 0; }
+  #answer ul { margin: 0 0 .75rem; padding-left: 1.3rem; }
+  #answer pre { margin: 0 0 .75rem; padding: .8rem 1rem; overflow-x: auto; background: var(--code-bg); border-radius: .5rem; font-size: .85rem; }
+  code { padding: .1em .35em; background: var(--code-bg); border-radius: .3rem; font-size: .88em; }
+  pre code { padding: 0; background: none; }
+  a.cite { display: inline-block; min-width: 1.35em; padding: 0 .3em; margin: 0 .1em; font-size: .75em; font-weight: 700;
+    text-align: center; line-height: 1.5; vertical-align: super; color: var(--accent); background: var(--accent-soft);
+    border-radius: .35rem; text-decoration: none; }
+  a.cite:hover { text-decoration: underline; }
+  .meta { margin-top: .9rem; padding-top: .7rem; border-top: 1px solid var(--border); color: var(--muted); font-size: .8rem; }
+  .meta .bad { color: var(--err-text); font-weight: 600; }
+
+  h2 { margin: 2rem 0 .6rem; font-size: .8rem; font-weight: 700; text-transform: uppercase; letter-spacing: .06em; color: var(--muted); }
+  ol#sources { list-style: none; margin: 0; padding: 0; display: grid; gap: .6rem; }
+  .src { padding: .75rem 1rem; background: var(--surface); border: 1px solid var(--border); border-radius: .6rem; scroll-margin-top: 1rem; }
+  .src.cited { border-left: 3px solid var(--accent); }
+  .src:not(.cited) { opacity: .65; }
+  .src:target { outline: 2px solid var(--accent); }
+  .src .row { display: flex; align-items: baseline; gap: .6rem; }
+  .badge { flex: none; min-width: 1.6em; padding: 0 .35em; font-size: .75rem; font-weight: 700; text-align: center; color: var(--accent); background: var(--accent-soft); border-radius: .35rem; }
+  .src .title { flex: 1; min-width: 0; font-size: .9rem; font-weight: 600; color: var(--text); text-decoration: none; overflow-wrap: anywhere; }
+  .src .title:hover { color: var(--accent); text-decoration: underline; }
+  .src .score { flex: none; font-size: .75rem; color: var(--muted); }
+  details { margin-top: .4rem; font-size: .85rem; color: var(--muted); }
+  summary { cursor: pointer; }
+  details p { margin: .4rem 0 0; white-space: pre-wrap; overflow-wrap: anywhere; }
+  [hidden] { display: none !important; }
+  footer { margin-top: 3rem; color: var(--muted); font-size: .8rem; }
 </style>
 </head>
 <body>
-<h1>cited</h1>
-<p class="muted">Grounded Q&amp;A over the FastAPI docs. Every answer is cited, or abstains.</p>
-<form id="f"><input id="q" placeholder="Ask about FastAPI..." autofocus><button>Ask</button></form>
-<div id="answer"></div>
-<div id="sources"></div>
+<main>
+  <header>
+    <h1>cited<span>.</span></h1>
+    <p class="tag">Answers from the FastAPI docs, with sources you can check. If the docs don't say, it says so.</p>
+  </header>
+
+  <form id="form" autocomplete="off">
+    <input id="q" type="text" placeholder="Ask about FastAPI..." aria-label="Your question" maxlength="2000" autofocus required>
+    <button id="go" type="submit">Ask</button>
+  </form>
+  <div class="chips" id="chips" aria-label="Example questions"></div>
+
+  <div id="status" role="status" aria-live="polite"></div>
+  <section id="result" hidden>
+    <div class="card" id="card">
+      <div id="answer"></div>
+      <div class="meta" id="meta" hidden></div>
+    </div>
+    <div id="sources-wrap" hidden>
+      <h2>Sources</h2>
+      <ol id="sources"></ol>
+    </div>
+  </section>
+
+  <footer>Free-tier Gemini: don't enter confidential information. Answers are generated, so check the cited sources.</footer>
+</main>
+
 <script>
 const $ = (id) => document.getElementById(id);
-$("f").addEventListener("submit", async (e) => {
-  e.preventDefault();
-  $("answer").textContent = ""; $("sources").replaceChildren();
-  const res = await fetch("/ask/stream", { method: "POST", headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ question: $("q").value }) });
-  const reader = res.body.getReader(), dec = new TextDecoder();
-  let buf = "";
-  for (;;) {
-    const { done, value } = await reader.read();
-    if (done) break;
-    buf += dec.decode(value, { stream: true });
-    let i;
-    while ((i = buf.indexOf("\n\n")) >= 0) {
-      const raw = buf.slice(0, i); buf = buf.slice(i + 2);
-      const ev = /^event: (.*)$/m.exec(raw)?.[1], data = JSON.parse(/^data: (.*)$/m.exec(raw)[1]);
-      if (ev === "token") $("answer").textContent += data;
-      if (ev === "done") for (const c of data.citations) {
-        const p = document.createElement("div"); p.className = "src";
-        const a = document.createElement("a"); a.href = c.url; a.textContent = c.source + " > " + c.heading;
-        p.append("[" + c.n + "] ", a); $("sources").append(p);
+const EXAMPLES = [
+  "How do I start the server with several worker processes?",
+  "What media type do Server-Sent Events use?",
+  "Is the content of a JWT encrypted?",
+  "How do I deploy FastAPI with a Helm chart?",
+];
+
+for (const text of EXAMPLES) {
+  const b = document.createElement("button");
+  b.type = "button"; b.className = "chip"; b.textContent = text;
+  b.addEventListener("click", () => { $("q").value = text; ask(text); });
+  $("chips").append(b);
+}
+
+/* --- safe rendering: everything goes through textContent, never innerHTML --- */
+const INLINE_SRC = "(`[^`]+`)|(\\*\\*[^*]+\\*\\*)|(\\[\\d+(?:\\s*,\\s*\\d+)*\\])";
+
+function renderInline(parent, text) {
+  let last = 0, m;
+  const re = new RegExp(INLINE_SRC, "g");  // per call: nested calls (bold) must not share lastIndex
+  while ((m = re.exec(text))) {
+    if (m.index > last) parent.append(text.slice(last, m.index));
+    if (m[1]) { const c = document.createElement("code"); c.textContent = m[1].slice(1, -1); parent.append(c); }
+    else if (m[2]) { const s = document.createElement("strong"); renderInline(s, m[2].slice(2, -2)); parent.append(s); }
+    else for (const n of m[3].slice(1, -1).split(",").map((x) => x.trim())) {
+      const a = document.createElement("a");
+      a.className = "cite"; a.href = "#src-" + n; a.textContent = n; a.title = "Source " + n;
+      parent.append(a);
+    }
+    last = m.index + m[0].length;
+  }
+  if (last < text.length) parent.append(text.slice(last));
+}
+
+function renderAnswer(el, text) {
+  el.replaceChildren();
+  const lines = text.split("\n");
+  let para = null, list = null, code = null;
+  const flush = () => { para = null; list = null; };
+  for (const line of lines) {
+    if (line.trimStart().startsWith("```")) {
+      if (code) { code = null; } else {
+        flush(); const pre = document.createElement("pre"), c = document.createElement("code");
+        pre.append(c); el.append(pre); code = c;
       }
+      continue;
+    }
+    if (code) { code.textContent += (code.textContent ? "\n" : "") + line; continue; }
+    const bullet = /^\s*[*-]\s+(.*)$/.exec(line);
+    if (bullet) {
+      if (!list) { list = document.createElement("ul"); el.append(list); para = null; }
+      const li = document.createElement("li"); renderInline(li, bullet[1]); list.append(li);
+    } else if (line.trim() === "") {
+      flush();
+    } else {
+      if (!para) { para = document.createElement("p"); el.append(para); list = null; }
+      else para.append(" ");
+      renderInline(para, line.trim());
     }
   }
-});
+}
+
+function renderSources(retrieved, cited) {
+  const ol = $("sources"); ol.replaceChildren();
+  for (const r of retrieved) {
+    const li = document.createElement("li");
+    li.id = "src-" + r.n; li.className = "src" + (cited.has(r.n) ? " cited" : "");
+    const row = document.createElement("div"); row.className = "row";
+    const badge = document.createElement("span"); badge.className = "badge"; badge.textContent = r.n;
+    const title = document.createElement("a"); title.className = "title";
+    title.href = r.url || "#"; title.target = "_blank"; title.rel = "noopener";
+    title.textContent = [r.source, ...r.trail].join(" › ");
+    const score = document.createElement("span"); score.className = "score";
+    score.textContent = r.dense != null ? "similarity " + r.dense.toFixed(2) : "score " + r.score.toFixed(2);
+    row.append(badge, title, score);
+    const d = document.createElement("details"), s = document.createElement("summary"), p = document.createElement("p");
+    s.textContent = cited.has(r.n) ? "Cited passage" : "Retrieved, not cited"; p.textContent = r.text;
+    d.append(s, p); li.append(row, d); ol.append(li);
+  }
+  $("sources-wrap").hidden = retrieved.length === 0;
+}
+
+function setStatus(text, busy) { $("status").textContent = text; $("status").className = busy ? "busy" : ""; }
+
+let controller = null;
+async function ask(question) {
+  if (controller) controller.abort();
+  controller = new AbortController();
+  $("go").disabled = true;
+  $("result").hidden = true; $("meta").hidden = true; $("sources-wrap").hidden = true;
+  $("card").className = "card"; $("answer").replaceChildren();
+  setStatus("Searching the docs…", true);
+  let text = "", started = false;
+  try {
+    const res = await fetch("/ask/stream", { method: "POST", signal: controller.signal,
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ question, strategy: "dense", top_k: 5 }) });
+    if (!res.ok) throw new Error("The server returned " + res.status);
+    const reader = res.body.getReader(), dec = new TextDecoder();
+    let buf = "", retrieved = [];
+    for (;;) {
+      const { done, value } = await reader.read();
+      if (done) break;
+      buf += dec.decode(value, { stream: true });
+      let i;
+      while ((i = buf.indexOf("\n\n")) >= 0) {
+        const raw = buf.slice(0, i); buf = buf.slice(i + 2);
+        const ev = /^event: (.*)$/m.exec(raw)?.[1], data = JSON.parse(/^data: (.*)$/m.exec(raw)[1]);
+        if (ev === "retrieved") { retrieved = data; setStatus("Writing the answer…", true); }
+        if (ev === "token") {
+          if (!started) { started = true; $("result").hidden = false; }
+          text += data; renderAnswer($("answer"), text);
+        }
+        if (ev === "done") finish(data, retrieved);
+      }
+    }
+  } catch (e) {
+    if (e.name === "AbortError") return;
+    $("result").hidden = false; $("card").className = "card error";
+    $("answer").textContent = "Something went wrong: " + e.message + ". Try again in a moment.";
+    setStatus("", false);
+  } finally {
+    $("go").disabled = false;
+  }
+}
+
+function finish(d, retrieved) {
+  setStatus("", false);
+  $("result").hidden = false;
+  renderAnswer($("answer"), d.answer);
+  const abstained = d.abstained;
+  $("card").className = "card" + (abstained ? " abstain" : "");
+  const cited = new Set(d.citations.map((c) => c.n));
+  const meta = $("meta"); meta.replaceChildren();
+  const bits = [(d.latency_ms / 1000).toFixed(1) + " s", d.strategy + " retrieval"];
+  if (abstained) bits.unshift(d.abstain_reason ? "Not in the docs (low retrieval confidence, model not called)" : "Not in the docs");
+  meta.append(bits.join(" · "));
+  if (d.invented_citations.length) {
+    const w = document.createElement("span"); w.className = "bad";
+    w.textContent = " · invalid citations: " + d.invented_citations.join(", ");
+    meta.append(w);
+  }
+  meta.hidden = false;
+  renderSources(retrieved.length ? retrieved : d.retrieved, cited);
+}
+
+$("form").addEventListener("submit", (e) => { e.preventDefault(); const q = $("q").value.trim(); if (q) ask(q); });
 </script>
 </body>
 </html>
