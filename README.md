@@ -4,6 +4,10 @@ Grounded Q&A over technical docs with Gemini: hybrid retrieval, citations, abste
 
 `cited` answers questions about the English [FastAPI documentation](https://fastapi.tiangolo.com) (MIT licensed) using only retrieved passages. Every answer carries numbered `[n]` citations that are checked against what was actually retrieved, and when the docs do not contain the answer it says `I don't know based on the documentation.`
 
+![cited answering "Is the content of a JWT encrypted?" with a citation chip that opens its source passage](docs/cited-demo.gif)
+
+The web page answering a question from the golden set, then opening the cited passage (recorded locally against the real API).
+
 Suggested GitHub topics: `rag`, `gemini`, `python`, `fastapi`, `evals`, `llm`.
 
 ## Quick start (about 5 minutes)
