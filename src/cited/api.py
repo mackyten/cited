@@ -9,6 +9,7 @@ from typing import Any
 
 from fastapi import FastAPI, HTTPException
 from fastapi.responses import FileResponse, StreamingResponse
+from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel, Field
 
 from cited.pipeline import Pipeline
@@ -50,6 +51,8 @@ def create_app(pipeline: Pipeline) -> FastAPI:
                 yield f"event: {ev['event']}\ndata: {json.dumps(ev['data'])}\n\n"
 
         return StreamingResponse(events(), media_type="text/event-stream")
+
+    app.mount("/static", StaticFiles(directory=STATIC), name="static")  # fonts for the page
 
     @app.get("/", include_in_schema=False)
     def page() -> FileResponse:

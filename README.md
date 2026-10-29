@@ -135,9 +135,13 @@ docker compose up                            # API on http://localhost:8000
 
 The key is passed through the environment and is never written into the image. **I could not build or run the image while writing this** (the Docker daemon was not running); I only validated `docker-compose.yml` with `docker compose config`.
 
+## Web page
+
+`cited serve` also serves a single-page UI at `/` (plain HTML, CSS and JS, no build step) that streams answers from `POST /ask/stream`. Citation chips jump to and highlight their source card, unused passages are listed separately, and a low-confidence question shows a clear "No answer" state. The design follows an external design-system mockup (Barlow type, blueprint frames). Fonts are self-hosted under `src/cited/static/fonts` (SIL Open Font License, see the notice there). Not tested: phone-width screens or browsers other than Chrome.
+
 ## Tests and CI
 
-`pytest -m "not live"` runs 54 offline tests with fake clients: chunking, BM25, rank fusion, the rate limiter and backoff (injected clock), the cache and resumable embedding, citation validation, abstention, the pipeline, and the API including SSE. `tests/test_live.py` is marked `live` and skipped when no key is present. The GitHub Actions workflow runs the offline tests on push and needs no key.
+`pytest -m "not live"` runs 55 offline tests with fake clients: chunking, BM25, rank fusion, the rate limiter and backoff (injected clock), the cache and resumable embedding, citation validation, abstention, the pipeline, and the API including SSE. `tests/test_live.py` is marked `live` and skipped when no key is present. The GitHub Actions workflow runs the offline tests on push and needs no key.
 
 ## Limitations
 

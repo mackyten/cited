@@ -38,3 +38,8 @@ def test_title_and_page(pipeline) -> None:  # type: ignore[no-untyped-def]
     app = create_app(pipeline)
     assert app.title == "cited"
     assert "cited" in TestClient(app).get("/").text
+
+
+def test_static_fonts_are_served(pipeline) -> None:  # type: ignore[no-untyped-def]
+    r = TestClient(create_app(pipeline)).get("/static/fonts/barlow-400.woff2")
+    assert r.status_code == 200 and r.content[:4] == b"wOF2"

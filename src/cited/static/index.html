@@ -3,214 +3,312 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>cited</title>
+<title>cited — answers from the FastAPI docs</title>
 <style>
-  :root {
-    --bg: #fafaf9; --surface: #ffffff; --text: #1c1917; --muted: #78716c; --border: #e7e5e4;
-    --accent: #4f46e5; --accent-soft: #eef2ff; --warn-bg: #fffbeb; --warn-border: #fcd34d; --warn-text: #92400e;
-    --err-bg: #fef2f2; --err-text: #b91c1c; --code-bg: #f5f5f4;
-  }
-  @media (prefers-color-scheme: dark) {
-    :root {
-      --bg: #151413; --surface: #1e1d1b; --text: #f5f5f4; --muted: #a8a29e; --border: #2e2c29;
-      --accent: #a5b4fc; --accent-soft: #26264a; --warn-bg: #2a2410; --warn-border: #6b5a1a; --warn-text: #fcd34d;
-      --err-bg: #2a1515; --err-text: #fca5a5; --code-bg: #262422;
-    }
-  }
-  * { box-sizing: border-box; }
-  body { margin: 0; background: var(--bg); color: var(--text);
-    font: 16px/1.6 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
-  main { max-width: 46rem; margin: 0 auto; padding: 3rem 1.25rem 4rem; }
-  header { margin-bottom: 1.75rem; }
-  h1 { margin: 0; font-size: 1.75rem; letter-spacing: -0.02em; }
-  h1 span { color: var(--accent); }
-  .tag { margin: .25rem 0 0; color: var(--muted); font-size: .95rem; }
+/* Type: Barlow and Barlow Condensed (SIL OFL), self-hosted from /static/fonts. */
+@font-face { font-family: "Barlow"; font-weight: 400; font-display: swap; src: url("/static/fonts/barlow-400.woff2") format("woff2"); }
+@font-face { font-family: "Barlow"; font-weight: 500; font-display: swap; src: url("/static/fonts/barlow-500.woff2") format("woff2"); }
+@font-face { font-family: "Barlow"; font-weight: 700; font-display: swap; src: url("/static/fonts/barlow-700.woff2") format("woff2"); }
+@font-face { font-family: "Barlow Condensed"; font-weight: 400; font-display: swap; src: url("/static/fonts/barlow-condensed-400.woff2") format("woff2"); }
+@font-face { font-family: "Barlow Condensed"; font-weight: 600; font-display: swap; src: url("/static/fonts/barlow-condensed-600.woff2") format("woff2"); }
 
-  form { display: flex; gap: .5rem; }
-  input[type=text] { flex: 1; min-width: 0; padding: .8rem 1rem; font: inherit; color: inherit;
-    background: var(--surface); border: 1px solid var(--border); border-radius: .6rem; }
-  input[type=text]:focus { outline: 2px solid var(--accent); outline-offset: 1px; }
-  button { padding: .8rem 1.25rem; font: inherit; font-weight: 600; color: #fff; background: var(--accent);
-    border: 0; border-radius: .6rem; cursor: pointer; }
-  @media (prefers-color-scheme: dark) { button { color: #151413; } }
-  button:disabled { opacity: .55; cursor: progress; }
-  button:focus-visible, .chip:focus-visible, a:focus-visible, summary:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+:root {
+  --color-bg: #f2f2f3; --color-surface: #e9e9ea; --color-text: #1d1f20;
+  --color-accent: #5980a6; --color-accent-100: #eef6ff; --color-accent-300: #b5d9fd; --color-accent-600: #597ea3;
+  --color-accent-700: #416180; --color-accent-800: #2c455d;
+  --color-divider: color-mix(in srgb, #1d1f20 16%, transparent);
+  --font-heading: "Barlow Condensed", system-ui, sans-serif; --font-heading-weight: 600;
+  --font-body: "Barlow", system-ui, sans-serif;
+  --space-1: 3.4px; --space-2: 6.8px; --space-3: 10.2px; --space-4: 13.6px;
+  --ink-accent: var(--color-accent-700); --chip-bg: var(--color-accent-100); --chip-fg: var(--color-accent-800);
+  --muted: color-mix(in srgb, var(--color-text) 58%, transparent);
+  --edge: clamp(16px, 5vw, 48px);
+  --mono: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+}
+html[data-theme="dark"] {
+  --color-bg: #141618; --color-surface: #1c1f21; --color-text: #e4e5e8; --color-accent: #94bce3;
+  --color-accent-600: #b5d9fd; --color-accent-700: #d6ebff;
+  --color-divider: color-mix(in srgb, #e4e5e8 17%, transparent);
+  --ink-accent: var(--color-accent-300); --chip-bg: color-mix(in srgb, #94bce3 16%, transparent); --chip-fg: #d6ebff;
+  color-scheme: dark;
+}
+*, *::before, *::after { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body { margin: 0; min-height: 100vh; display: flex; flex-direction: column; background: var(--color-bg); color: var(--color-text);
+  font: 400 15px/1.55 var(--font-body); text-wrap: pretty; transition: background .2s, color .2s; }
+h1, h2, h3 { font-family: var(--font-heading); font-weight: var(--font-heading-weight); line-height: 1.12; letter-spacing: -0.015em; margin: 0 0 var(--space-2); }
+p { margin: 0 0 var(--space-3); }
+a { color: var(--ink-accent); text-underline-offset: 3px; }
+a:hover { color: var(--color-accent); }
+:focus { outline: none; }
+:focus-visible { outline: 2px solid var(--color-accent); outline-offset: 2px; }
+::selection { background: color-mix(in srgb, var(--color-accent) 30%, transparent); }
+.icon { width: 18px; height: 18px; fill: none; stroke: currentColor; stroke-width: 1.5; stroke-linecap: round; stroke-linejoin: round; flex: none; }
 
-  .chips { display: flex; flex-wrap: wrap; gap: .5rem; margin-top: .9rem; }
-  .chip { padding: .35rem .75rem; font-size: .85rem; font-weight: 400; color: var(--muted); background: transparent;
-    border: 1px solid var(--border); border-radius: 999px; cursor: pointer; }
-  .chip:hover { color: var(--text); border-color: var(--accent); }
+/* blueprint frame: square, hairline-bordered, registration marks at the corners */
+.blueprint { position: relative; border: 1px solid var(--color-divider); border-radius: 0; }
+.blueprint > .corner { position: absolute; width: 11px; height: 11px; color: color-mix(in srgb, var(--color-text) 55%, transparent); }
+.blueprint > .corner::before, .blueprint > .corner::after { content: ""; position: absolute; background: currentColor; }
+.blueprint > .corner::before { left: 5px; top: 0; width: 1px; height: 100%; }
+.blueprint > .corner::after { top: 5px; left: 0; width: 100%; height: 1px; }
+.blueprint > .corner.tl { top: -6px; left: -6px; } .blueprint > .corner.tr { top: -6px; right: -6px; }
+.blueprint > .corner.bl { bottom: -6px; left: -6px; } .blueprint > .corner.br { bottom: -6px; right: -6px; }
 
-  #status { margin-top: 1.5rem; color: var(--muted); font-size: .9rem; min-height: 1.4em; }
-  #status.busy::before { content: ""; display: inline-block; width: .7em; height: .7em; margin-right: .5em;
-    border: 2px solid var(--border); border-top-color: var(--accent); border-radius: 50%; animation: spin .8s linear infinite; }
-  @keyframes spin { to { transform: rotate(360deg); } }
-  @media (prefers-reduced-motion: reduce) { #status.busy::before { animation: none; } }
+/* buttons */
+.btn { display: inline-flex; align-items: center; justify-content: center; gap: 6px; cursor: pointer; text-decoration: none;
+  font: var(--font-heading-weight) 14px/1.2 var(--font-heading); color: var(--color-text); background: transparent;
+  border: 1px solid var(--color-divider); border-radius: 0; padding: var(--space-2) calc(var(--space-3) * 1.2); }
+.btn:disabled { opacity: .45; cursor: not-allowed; }
+.btn-primary { background: var(--color-accent); color: var(--color-bg); border-color: var(--color-accent); }
+.btn-primary:hover { background: var(--color-accent-600); }
+.btn-secondary:hover { background: color-mix(in srgb, var(--color-text) 7%, transparent); }
+.btn-ghost { color: var(--color-accent); border-color: transparent; padding-inline: var(--space-1); }
+.btn-ghost:hover { background: color-mix(in srgb, var(--color-accent) 10%, transparent); }
+.btn-icon { width: 36px; height: 36px; padding: 0; }
 
-  .card { margin-top: 1rem; padding: 1.25rem 1.4rem; background: var(--surface); border: 1px solid var(--border); border-radius: .8rem; }
-  .card.abstain { background: var(--warn-bg); border-color: var(--warn-border); color: var(--warn-text); }
-  .card.error { background: var(--err-bg); border-color: var(--err-text); color: var(--err-text); }
-  #answer p { margin: 0 0 .75rem; }
-  #answer p:last-child { margin-bottom: 0; }
-  #answer ul { margin: 0 0 .75rem; padding-left: 1.3rem; }
-  #answer pre { margin: 0 0 .75rem; padding: .8rem 1rem; overflow-x: auto; background: var(--code-bg); border-radius: .5rem; font-size: .85rem; }
-  code { padding: .1em .35em; background: var(--code-bg); border-radius: .3rem; font-size: .88em; }
-  pre code { padding: 0; background: none; }
-  a.cite { display: inline-block; min-width: 1.35em; padding: 0 .3em; margin: 0 .1em; font-size: .75em; font-weight: 700;
-    text-align: center; line-height: 1.5; vertical-align: super; color: var(--accent); background: var(--accent-soft);
-    border-radius: .35rem; text-decoration: none; }
-  a.cite:hover { text-decoration: underline; }
-  .meta { margin-top: .9rem; padding-top: .7rem; border-top: 1px solid var(--border); color: var(--muted); font-size: .8rem; }
-  .meta .bad { color: var(--err-text); font-weight: 600; }
+/* header and footer */
+.nav { display: flex; align-items: center; gap: var(--space-4); padding: var(--space-4) var(--edge); border-bottom: 1px solid var(--color-divider); }
+.nav-brand { display: flex; align-items: baseline; gap: 10px; margin-right: auto; font: var(--font-heading-weight) 22px/1.2 var(--font-heading); letter-spacing: -.01em; }
+.scope { font: 400 12px var(--font-body); letter-spacing: 0; color: var(--muted); display: flex; align-items: center; gap: 6px; }
+.scope i { width: 6px; height: 6px; background: var(--color-accent); display: inline-block; }
+main { flex: 1; width: 100%; max-width: 800px; margin: 0 auto; padding: 0 var(--edge); }
+footer { padding: 28px var(--edge) 32px; margin-top: 64px; border-top: 1px solid var(--color-divider); font-size: 13px; color: var(--muted);
+  display: flex; flex-wrap: wrap; justify-content: space-between; gap: 8px 24px; }
 
-  h2 { margin: 2rem 0 .6rem; font-size: .8rem; font-weight: 700; text-transform: uppercase; letter-spacing: .06em; color: var(--muted); }
-  ol#sources { list-style: none; margin: 0; padding: 0; display: grid; gap: .6rem; }
-  .src { padding: .75rem 1rem; background: var(--surface); border: 1px solid var(--border); border-radius: .6rem; scroll-margin-top: 1rem; }
-  .src.cited { border-left: 3px solid var(--accent); }
-  .src:not(.cited) { opacity: .65; }
-  .src:target { outline: 2px solid var(--accent); }
-  .src .row { display: flex; align-items: baseline; gap: .6rem; }
-  .badge { flex: none; min-width: 1.6em; padding: 0 .35em; font-size: .75rem; font-weight: 700; text-align: center; color: var(--accent); background: var(--accent-soft); border-radius: .35rem; }
-  .src .title { flex: 1; min-width: 0; font-size: .9rem; font-weight: 600; color: var(--text); text-decoration: none; overflow-wrap: anywhere; }
-  .src .title:hover { color: var(--accent); text-decoration: underline; }
-  .src .score { flex: none; font-size: .75rem; color: var(--muted); }
-  details { margin-top: .4rem; font-size: .85rem; color: var(--muted); }
-  summary { cursor: pointer; }
-  details p { margin: .4rem 0 0; white-space: pre-wrap; overflow-wrap: anywhere; }
-  [hidden] { display: none !important; }
-  footer { margin-top: 3rem; color: var(--muted); font-size: .8rem; }
+/* search */
+.ask { display: flex; align-items: stretch; background: var(--color-surface); }
+.ask input { flex: 1; min-width: 0; border: 0; background: transparent; font: inherit; font-size: 17px; color: var(--color-text); padding: 14px 16px; caret-color: var(--color-accent); }
+.ask input::placeholder { color: var(--muted); }
+.ask input:focus-visible { outline: none; }
+.ask:has(input:focus-visible) { border-color: var(--color-accent); }
+.ask .btn-primary { margin: 6px; padding-inline: 18px; font-size: 15px; text-transform: uppercase; letter-spacing: .04em; }
+.ask kbd { align-self: center; font: 11px var(--mono); color: var(--muted); border: 1px solid var(--color-divider); padding: 1px 6px; margin-right: 4px; }
+
+/* empty state */
+.hero { padding: clamp(48px, 12vh, 120px) 0 0; }
+.hero h1 { font-size: clamp(40px, 7vw, 64px); text-transform: uppercase; line-height: 1; letter-spacing: -.01em; margin: 0 0 14px; }
+.hero p { font-size: 17px; max-width: 46ch; color: var(--muted); margin: 0 0 32px; }
+.examples { margin-top: 40px; }
+.label { font: var(--font-heading-weight) 12px var(--font-heading); letter-spacing: .1em; text-transform: uppercase; color: var(--muted);
+  display: flex; justify-content: space-between; gap: 12px; padding-bottom: 8px; border-bottom: 1px solid var(--color-divider); }
+.label span:first-child { white-space: nowrap; }
+.label span:last-child:not(:first-child) { font-family: var(--font-body); font-weight: 400; letter-spacing: .02em; text-transform: none; }
+.ex-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); border-left: 1px solid var(--color-divider); }
+.ex { all: unset; box-sizing: border-box; cursor: pointer; padding: 16px 16px 18px; border-right: 1px solid var(--color-divider);
+  border-bottom: 1px solid var(--color-divider); font-size: 15px; display: flex; flex-direction: column; gap: 10px; min-height: 96px; }
+.ex small { font: 11px var(--mono); color: var(--muted); }
+.ex:hover { background: color-mix(in srgb, var(--color-accent) 8%, transparent); }
+.ex:active { background: color-mix(in srgb, var(--color-accent) 15%, transparent); }
+.ex:focus-visible { outline: 2px solid var(--color-accent); outline-offset: -2px; }
+@media (max-width: 560px) { .ex-grid { grid-template-columns: 1fr; } .ex { min-height: 0; } .ask kbd { display: none; } }
+
+/* results */
+.top { padding-top: 28px; }
+.qhead { margin: 36px 0 20px; }
+.qhead h2 { font-size: clamp(28px, 4.5vw, 38px); text-transform: uppercase; line-height: 1.05; margin: 0; overflow-wrap: anywhere; }
+.panel { padding: 22px 24px 24px; }
+@media (max-width: 560px) { .panel { padding: 18px 16px; } }
+.kicker { font: var(--font-heading-weight) 12px var(--font-heading); letter-spacing: .1em; text-transform: uppercase; color: var(--ink-accent); display: flex; align-items: center; gap: 8px; margin-bottom: 12px; }
+.kicker .sep { color: var(--muted); }
+.answer { font-size: 18px; line-height: 1.65; margin: 0; }
+.answer p { margin: 0 0 12px; } .answer p:last-child { margin-bottom: 0; }
+.answer ul { margin: 0 0 12px; padding-left: 1.3rem; }
+.answer pre { margin: 0 0 12px; padding: 12px 14px; overflow-x: auto; background: color-mix(in srgb, var(--color-text) 7%, transparent); font-size: 14px; line-height: 1.5; }
+.answer code, .passage code { font: .86em var(--mono); background: color-mix(in srgb, var(--color-text) 7%, transparent); padding: 1px 5px; }
+.answer pre code { padding: 0; background: none; }
+.cite { all: unset; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; min-width: 20px; height: 18px; padding: 0 4px; margin: 0 1px;
+  font: 700 11px/1 var(--font-body); background: var(--chip-bg); color: var(--chip-fg); border: 1px solid color-mix(in srgb, var(--color-accent) 45%, transparent);
+  vertical-align: 2px; transition: background .12s; }
+.cite:hover, .cite.on { background: var(--color-accent); color: var(--color-bg); border-color: var(--color-accent); }
+.cite:focus-visible { outline: 2px solid var(--color-accent); outline-offset: 2px; }
+.cite.bad { background: transparent; color: var(--muted); border: 1px dashed var(--muted); cursor: help; text-decoration: line-through; }
+.caret { display: inline-block; width: 8px; height: 1.05em; background: var(--color-accent); vertical-align: -3px; margin-left: 2px; animation: blink 1s steps(1) infinite; }
+@keyframes blink { 50% { opacity: 0; } }
+.status { display: flex; flex-wrap: wrap; gap: 6px 18px; font-size: 13px; color: var(--muted); margin-top: 16px; }
+.step { display: flex; align-items: center; gap: 7px; }
+.step i { width: 7px; height: 7px; border: 1px solid currentColor; display: inline-block; }
+.step.done { color: var(--color-text); } .step.done i { background: var(--color-accent); border-color: var(--color-accent); }
+.step.now { color: var(--ink-accent); } .step.now i { animation: pulse 1s ease-in-out infinite; border-color: var(--color-accent); }
+@keyframes pulse { 50% { background: var(--color-accent); } }
+.sk { height: 12px; background: color-mix(in srgb, var(--color-text) 8%, transparent); margin: 10px 0; animation: fade 1.4s ease-in-out infinite; }
+@keyframes fade { 50% { opacity: .45; } }
+.warn { display: flex; gap: 12px; align-items: flex-start; padding: 12px 14px; margin-top: 18px; border: 1px dashed var(--color-accent); font-size: 14px; background: color-mix(in srgb, var(--color-accent) 7%, transparent); }
+.warn .icon { color: var(--ink-accent); margin-top: 2px; }
+.meta { margin-top: 14px; font: 12px var(--mono); color: var(--muted); }
+.actions { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 18px; }
+.refusal h3 { font-size: clamp(24px, 3.6vw, 30px); text-transform: uppercase; line-height: 1.08; margin: 0 0 10px; }
+.refusal p { font-size: 16px; color: var(--muted); max-width: 54ch; margin: 0; }
+.err { border: 1px dashed var(--color-divider); padding: 22px 24px; }
+.err h3 { font-size: 24px; text-transform: uppercase; margin: 0 0 6px; }
+.err p { margin: 0; color: var(--muted); }
+.err code { display: inline-block; margin-top: 12px; font: 12px var(--mono); color: var(--muted); overflow-wrap: anywhere; }
+
+/* sources */
+.sources { margin-top: 44px; }
+.src-list { display: flex; flex-direction: column; gap: 18px; margin-top: 18px; }
+.src { padding: 14px 16px; transition: border-color .15s, background .15s; scroll-margin-top: 24px; }
+.src.cited { border-color: color-mix(in srgb, var(--color-accent) 55%, transparent); }
+.src.hl { border-color: var(--color-accent); background: color-mix(in srgb, var(--color-accent) 7%, transparent); }
+.src-row { display: grid; grid-template-columns: auto minmax(0, 1fr) auto auto; gap: 14px; align-items: start; }
+.src-n { font: 700 12px/1 var(--font-body); min-width: 22px; height: 20px; display: inline-flex; align-items: center; justify-content: center;
+  background: var(--chip-bg); color: var(--chip-fg); border: 1px solid color-mix(in srgb, var(--color-accent) 45%, transparent); margin-top: 1px; }
+.src-t { font-size: 15px; font-weight: 500; line-height: 1.35; overflow-wrap: anywhere; }
+.src-t a { color: var(--color-text); text-decoration: none; }
+.src-t a:hover { color: var(--ink-accent); text-decoration: underline; }
+.src-t .chev { color: var(--muted); margin: 0 4px; }
+.src-p { font: 11.5px var(--mono); color: var(--muted); margin-top: 3px; overflow-wrap: anywhere; }
+.score { display: flex; flex-direction: column; align-items: flex-end; gap: 4px; font: 12px var(--mono); color: var(--muted); white-space: nowrap; }
+.score b { font-weight: 500; color: var(--color-text); }
+.bar { width: 56px; height: 3px; background: color-mix(in srgb, var(--color-text) 12%, transparent); position: relative; }
+.bar i { position: absolute; inset: 0 auto 0 0; background: var(--color-accent); }
+.tog { all: unset; cursor: pointer; width: 28px; height: 28px; display: grid; place-items: center; color: var(--muted); margin: -4px -6px 0 0; }
+.tog:hover { color: var(--color-text); background: color-mix(in srgb, var(--color-text) 7%, transparent); }
+.tog:focus-visible { outline: 2px solid var(--color-accent); }
+.tog .icon { transition: transform .15s; } .src.open .tog .icon { transform: rotate(180deg); }
+.passage { display: none; margin: 12px 0 2px 36px; padding: 10px 0 0 14px; border-left: 2px solid var(--color-accent); font-size: 14px; line-height: 1.6; white-space: pre-wrap; overflow-wrap: anywhere; }
+.src.open .passage { display: block; }
+.dimhead { margin-top: 34px; }
+.src.dim { border: 0; border-bottom: 1px solid var(--color-divider); padding: 12px 0; opacity: .62; }
+.src.dim:hover, .src.dim.open { opacity: 1; }
+.src.dim .src-n { background: transparent; color: var(--muted); border-color: var(--color-divider); }
+.src.dim .passage { border-left-color: var(--color-divider); }
+.dim-list { display: flex; flex-direction: column; margin-top: 4px; }
+@media (max-width: 560px) {
+  .src-row { grid-template-columns: auto minmax(0, 1fr) auto; }
+  .score { grid-column: 2; grid-row: 2; flex-direction: row; align-items: center; justify-content: flex-start; gap: 8px; }
+  .tog { grid-column: 3; grid-row: 1; } .passage { margin-left: 0; }
+}
+.sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
+@media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } .caret, .sk, .step.now i { animation: none; } }
 </style>
 </head>
 <body>
-<main>
-  <header>
-    <h1>cited<span>.</span></h1>
-    <p class="tag">Answers from the FastAPI docs, with sources you can check. If the docs don't say, it says so.</p>
-  </header>
-
-  <form id="form" autocomplete="off">
-    <input id="q" type="text" placeholder="Ask about FastAPI..." aria-label="Your question" maxlength="2000" autofocus required>
-    <button id="go" type="submit">Ask</button>
-  </form>
-  <div class="chips" id="chips" aria-label="Example questions"></div>
-
-  <div id="status" role="status" aria-live="polite"></div>
-  <section id="result" hidden>
-    <div class="card" id="card">
-      <div id="answer"></div>
-      <div class="meta" id="meta" hidden></div>
-    </div>
-    <div id="sources-wrap" hidden>
-      <h2>Sources</h2>
-      <ol id="sources"></ol>
-    </div>
-  </section>
-
-  <footer>Free-tier Gemini: don't enter confidential information. Answers are generated, so check the cited sources.</footer>
-</main>
+<header class="nav">
+  <div class="nav-brand"><b>cited</b><span class="scope"><i></i>FastAPI docs</span></div>
+  <button class="btn btn-ghost btn-icon" id="theme" aria-label="Toggle dark theme" title="Toggle theme"><svg class="icon" viewBox="0 0 24 24" id="themeIco"></svg></button>
+</header>
+<main id="app"></main>
+<footer><span>Answers are generated from retrieved passages and can be wrong. Check the cited sources before you rely on them.</span><span id="index-note">Index: FastAPI documentation</span></footer>
 
 <script>
-const $ = (id) => document.getElementById(id);
+const $ = (s, r = document) => r.querySelector(s);
+const ICONS = {
+  search: '<circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/>',
+  sun: '<circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/>',
+  moon: '<path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/>',
+  chev: '<path d="m6 9 6 6 6-6"/>',
+  alert: '<path d="m21.7 18-8-14a2 2 0 0 0-3.4 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.7-3Z"/><path d="M12 9v4M12 17h.01"/>',
+  retry: '<path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/>',
+};
+const ico = (n, style = "") => `<svg class="icon" viewBox="0 0 24 24" ${style}>${ICONS[n]}</svg>`;
+const CORNERS = '<i class="corner tl"></i><i class="corner tr"></i><i class="corner bl"></i><i class="corner br"></i>';
+const esc = (s) => String(s).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
 const EXAMPLES = [
-  "How do I start the server with several worker processes?",
-  "What media type do Server-Sent Events use?",
-  "Is the content of a JWT encrypted?",
-  "How do I deploy FastAPI with a Helm chart?",
+  ["Deployment", "How do I start the server with several worker processes?"],
+  ["Streaming", "What media type do Server-Sent Events use?"],
+  ["Security", "Is the content of a JWT encrypted?"],
+  ["Not in the docs", "How do I deploy FastAPI with a Helm chart?"],
 ];
+const app = $("#app");
+let controller = null, lastQuestion = "";
 
-for (const text of EXAMPLES) {
-  const b = document.createElement("button");
-  b.type = "button"; b.className = "chip"; b.textContent = text;
-  b.addEventListener("click", () => { $("q").value = text; ask(text); });
-  $("chips").append(b);
+/* ---- theme ---- */
+function setTheme(t, save) {
+  document.documentElement.dataset.theme = t;
+  $("#themeIco").innerHTML = ICONS[t === "dark" ? "sun" : "moon"];
+  if (save) { try { localStorage.setItem("cited-theme", t); } catch (e) { /* storage unavailable */ } }
 }
+let stored = null;
+try { stored = localStorage.getItem("cited-theme"); } catch (e) { /* ignore */ }
+setTheme(stored || (matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light"), false);
+$("#theme").addEventListener("click", () => setTheme(document.documentElement.dataset.theme === "dark" ? "light" : "dark", true));
 
-/* --- safe rendering: everything goes through textContent, never innerHTML --- */
-const INLINE_SRC = "(`[^`]+`)|(\\*\\*[^*]+\\*\\*)|(\\[\\d+(?:\\s*,\\s*\\d+)*\\])";
-
-function renderInline(parent, text) {
+/* ---- safe answer rendering: only textContent and createElement, never innerHTML ---- */
+function renderInline(parent, text, nSources) {
+  const re = new RegExp("(`[^`]+`)|(\\*\\*[^*]+\\*\\*)|(\\[\\d+(?:\\s*,\\s*\\d+)*\\])", "g");  // per call: bold nests
   let last = 0, m;
-  const re = new RegExp(INLINE_SRC, "g");  // per call: nested calls (bold) must not share lastIndex
   while ((m = re.exec(text))) {
     if (m.index > last) parent.append(text.slice(last, m.index));
     if (m[1]) { const c = document.createElement("code"); c.textContent = m[1].slice(1, -1); parent.append(c); }
-    else if (m[2]) { const s = document.createElement("strong"); renderInline(s, m[2].slice(2, -2)); parent.append(s); }
-    else for (const n of m[3].slice(1, -1).split(",").map((x) => x.trim())) {
-      const a = document.createElement("a");
-      a.className = "cite"; a.href = "#src-" + n; a.textContent = n; a.title = "Source " + n;
-      parent.append(a);
+    else if (m[2]) { const s = document.createElement("strong"); renderInline(s, m[2].slice(2, -2), nSources); parent.append(s); }
+    else for (const part of m[3].slice(1, -1).split(",")) {
+      const n = parseInt(part, 10), b = document.createElement("button");
+      b.type = "button"; b.textContent = n;
+      if (n >= 1 && n <= nSources) { b.className = "cite"; b.dataset.c = n; b.setAttribute("aria-label", "Source " + n); }
+      else { b.className = "cite bad"; b.title = "[" + n + "] doesn't match any retrieved passage"; b.setAttribute("aria-label", "Invalid citation " + n); }
+      parent.append(b);
     }
     last = m.index + m[0].length;
   }
   if (last < text.length) parent.append(text.slice(last));
 }
-
-function renderAnswer(el, text) {
+function renderAnswer(el, text, nSources, streaming) {
   el.replaceChildren();
-  const lines = text.split("\n");
-  let para = null, list = null, code = null;
-  const flush = () => { para = null; list = null; };
-  for (const line of lines) {
+  let para = null, list = null, code = null, tail = el;
+  for (const line of text.split("\n")) {
     if (line.trimStart().startsWith("```")) {
-      if (code) { code = null; } else {
-        flush(); const pre = document.createElement("pre"), c = document.createElement("code");
-        pre.append(c); el.append(pre); code = c;
-      }
+      if (code) code = null;
+      else { para = list = null; const pre = document.createElement("pre"), c = document.createElement("code"); pre.append(c); el.append(pre); code = c; tail = c; }
       continue;
     }
     if (code) { code.textContent += (code.textContent ? "\n" : "") + line; continue; }
     const bullet = /^\s*[*-]\s+(.*)$/.exec(line);
     if (bullet) {
       if (!list) { list = document.createElement("ul"); el.append(list); para = null; }
-      const li = document.createElement("li"); renderInline(li, bullet[1]); list.append(li);
-    } else if (line.trim() === "") {
-      flush();
-    } else {
-      if (!para) { para = document.createElement("p"); el.append(para); list = null; }
-      else para.append(" ");
-      renderInline(para, line.trim());
+      const li = document.createElement("li"); renderInline(li, bullet[1], nSources); list.append(li); tail = li;
+    } else if (line.trim() === "") { para = list = null; }
+    else {
+      if (!para) { para = document.createElement("p"); el.append(para); list = null; } else para.append(" ");
+      renderInline(para, line.trim(), nSources); tail = para;
     }
   }
+  if (streaming) { const c = document.createElement("span"); c.className = "caret"; tail.append(c); }
 }
 
-function renderSources(retrieved, cited) {
-  const ol = $("sources"); ol.replaceChildren();
-  for (const r of retrieved) {
-    const li = document.createElement("li");
-    li.id = "src-" + r.n; li.className = "src" + (cited.has(r.n) ? " cited" : "");
-    const row = document.createElement("div"); row.className = "row";
-    const badge = document.createElement("span"); badge.className = "badge"; badge.textContent = r.n;
-    const title = document.createElement("a"); title.className = "title";
-    title.href = r.url || "#"; title.target = "_blank"; title.rel = "noopener";
-    title.textContent = [r.source, ...r.trail].join(" › ");
-    const score = document.createElement("span"); score.className = "score";
-    score.textContent = r.dense != null ? "similarity " + r.dense.toFixed(2) : "score " + r.score.toFixed(2);
-    row.append(badge, title, score);
-    const d = document.createElement("details"), s = document.createElement("summary"), p = document.createElement("p");
-    s.textContent = cited.has(r.n) ? "Cited passage" : "Retrieved, not cited"; p.textContent = r.text;
-    d.append(s, p); li.append(row, d); ol.append(li);
-  }
-  $("sources-wrap").hidden = retrieved.length === 0;
+/* ---- views ---- */
+const askBox = (v = "") => `<form class="ask blueprint" id="ask">${CORNERS}<label for="q" class="sr">Question</label><input id="q" name="q" autocomplete="off" maxlength="2000" placeholder="Ask a question about FastAPI" value="${esc(v)}"><kbd>/</kbd><button class="btn btn-primary" type="submit">${ico("search", 'style="width:16px;height:16px"')}Ask</button></form>`;
+const head = (q) => `<div class="top">${askBox(q)}</div><div class="qhead"><h2>${esc(q)}</h2></div>`;
+const steps = (n) => `<div class="status" role="status">${["Searching the docs", "Ranking passages", "Writing answer"].map((s, i) => `<span class="step ${i < n ? "done" : i === n ? "now" : ""}"><i></i>${s}</span>`).join("")}</div>`;
+const skeletonSources = () => `<section class="sources"><div class="label"><span>Sources</span><span>Retrieving</span></div><div class="src-list">${[1, 2, 3].map(() => `<div class="src blueprint">${CORNERS}<div class="sk" style="width:55%;margin-top:2px"></div><div class="sk" style="width:35%;height:9px;margin-bottom:2px"></div></div>`).join("")}</div></section>`;
+
+function showEmpty() {
+  if (controller) controller.abort();
+  app.innerHTML = `<section class="hero"><h1>Ask the docs.</h1><p>Answers come only from the FastAPI documentation, and every claim links to the passage it came from.</p>${askBox()}<div class="examples"><div class="label"><span>Try a question</span></div><div class="ex-grid">${EXAMPLES.map(([t, q]) => `<button class="ex" type="button" data-q="${esc(q)}"><small>${esc(t)}</small>${esc(q)}</button>`).join("")}</div></div></section>`;
+}
+function showSearching(q, step) {
+  app.innerHTML = head(q) + `<div class="panel blueprint">${CORNERS}<div class="kicker">Answer</div><div class="sk" style="width:92%"></div><div class="sk" style="width:84%"></div><div class="sk" style="width:58%"></div>${steps(step)}</div>` + skeletonSources();
+}
+function showError(q, message) {
+  app.innerHTML = head(q) + `<div class="err" role="alert"><h3>Something went wrong</h3><p>The answer service didn't respond, so no answer was generated. Your question is still in the box above.</p><code>${esc(message)}</code><div class="actions"><button class="btn btn-primary blueprint" type="button" data-act="retry">${CORNERS}${ico("retry", 'style="width:16px;height:16px"')}Try again</button></div></div>`;
+}
+function pathOf(url) { try { const u = new URL(url); return u.pathname + u.hash; } catch (e) { return ""; } }
+function safeUrl(url) { return /^https?:\/\//.test(url || "") ? url : "#"; }
+function srcCard(r, isCited) {
+  const page = r.trail[0] || r.source, section = r.trail.slice(1).join(" › ");
+  const score = r.dense != null ? r.dense : r.score, pct = Math.max(0, Math.min(100, score * 100));
+  return `<article class="src ${isCited ? "cited blueprint" : "dim"}" id="src-${r.n}">${isCited ? CORNERS : ""}<div class="src-row"><span class="src-n">${r.n}</span><div><div class="src-t"><a href="${esc(safeUrl(r.url))}" target="_blank" rel="noopener">${esc(page)}${section ? `<span class="chev">›</span>${esc(section)}` : ""}</a></div><div class="src-p">${esc(pathOf(r.url) || r.source)}</div></div><div class="score" title="Cosine similarity to your question"><b>${score.toFixed(2)}</b><span class="bar"><i style="width:${pct}%"></i></span></div><button class="tog" type="button" aria-expanded="false" aria-label="Show passage">${ico("chev")}</button></div><div class="passage">${esc(r.text)}</div></article>`;
+}
+function sourcesHTML(retrieved, citedSet, abstained) {
+  const cs = retrieved.filter((r) => citedSet.has(r.n)), rs = retrieved.filter((r) => !citedSet.has(r.n));
+  let h = '<section class="sources">';
+  if (cs.length) h += `<div class="label"><span>Sources</span><span>${cs.length} cited of ${retrieved.length} retrieved</span></div><div class="src-list">${cs.map((r) => srcCard(r, true)).join("")}</div>`;
+  if (rs.length) h += `<div class="label ${cs.length ? "dimhead" : ""}"><span>${cs.length ? "Retrieved, not cited" : abstained ? "Closest passages, none used" : "Retrieved, not cited"}</span><span>${rs.length}</span></div><div class="dim-list">${rs.map((r) => srcCard(r, false)).join("")}</div>`;
+  return h + "</section>";
 }
 
-function setStatus(text, busy) { $("status").textContent = text; $("status").className = busy ? "busy" : ""; }
-
-let controller = null;
-async function ask(question) {
+/* ---- the live request ---- */
+async function ask(q) {
   if (controller) controller.abort();
   controller = new AbortController();
-  $("go").disabled = true;
-  $("result").hidden = true; $("meta").hidden = true; $("sources-wrap").hidden = true;
-  $("card").className = "card"; $("answer").replaceChildren();
-  setStatus("Searching the docs…", true);
-  let text = "", started = false;
+  lastQuestion = q;
+  showSearching(q, 0);
+  let retrieved = [], text = "", ansEl = null;
   try {
-    const res = await fetch("/ask/stream", { method: "POST", signal: controller.signal,
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ question, strategy: "dense", top_k: 5 }) });
-    if (!res.ok) throw new Error("The server returned " + res.status);
+    const res = await fetch("/ask/stream", { method: "POST", signal: controller.signal, headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ question: q, strategy: "dense", top_k: 5 }) });
+    if (!res.ok) throw new Error(res.status + " " + (res.statusText || "request failed"));
     const reader = res.body.getReader(), dec = new TextDecoder();
-    let buf = "", retrieved = [];
+    let buf = "";
     for (;;) {
       const { done, value } = await reader.read();
       if (done) break;
@@ -219,45 +317,64 @@ async function ask(question) {
       while ((i = buf.indexOf("\n\n")) >= 0) {
         const raw = buf.slice(0, i); buf = buf.slice(i + 2);
         const ev = /^event: (.*)$/m.exec(raw)?.[1], data = JSON.parse(/^data: (.*)$/m.exec(raw)[1]);
-        if (ev === "retrieved") { retrieved = data; setStatus("Writing the answer…", true); }
-        if (ev === "token") {
-          if (!started) { started = true; $("result").hidden = false; }
-          text += data; renderAnswer($("answer"), text);
-        }
-        if (ev === "done") finish(data, retrieved);
+        if (ev === "retrieved") { retrieved = data; const st = $(".status"); if (st) st.outerHTML = steps(2); }
+        else if (ev === "token") {
+          text += data;
+          if (!ansEl) {
+            app.innerHTML = head(q) + `<div class="panel blueprint">${CORNERS}<div class="kicker">Answer</div><p class="answer" id="ans" aria-live="polite"></p>${steps(2)}</div>` + skeletonSources();
+            ansEl = $("#ans");
+          }
+          renderAnswer(ansEl, text, retrieved.length, true);
+        } else if (ev === "done") finish(q, data, retrieved);
       }
     }
   } catch (e) {
     if (e.name === "AbortError") return;
-    $("result").hidden = false; $("card").className = "card error";
-    $("answer").textContent = "Something went wrong: " + e.message + ". Try again in a moment.";
-    setStatus("", false);
-  } finally {
-    $("go").disabled = false;
+    showError(q, e.message || String(e));
   }
 }
 
-function finish(d, retrieved) {
-  setStatus("", false);
-  $("result").hidden = false;
-  renderAnswer($("answer"), d.answer);
-  const abstained = d.abstained;
-  $("card").className = "card" + (abstained ? " abstain" : "");
-  const cited = new Set(d.citations.map((c) => c.n));
-  const meta = $("meta"); meta.replaceChildren();
-  const bits = [(d.latency_ms / 1000).toFixed(1) + " s", d.strategy + " retrieval"];
-  if (abstained) bits.unshift(d.abstain_reason ? "Not in the docs (low retrieval confidence, model not called)" : "Not in the docs");
-  meta.append(bits.join(" · "));
-  if (d.invented_citations.length) {
-    const w = document.createElement("span"); w.className = "bad";
-    w.textContent = " · invalid citations: " + d.invented_citations.join(", ");
-    meta.append(w);
+function finish(q, d, retrieved) {
+  const list = retrieved.length ? retrieved : d.retrieved, citedSet = new Set(d.citations.map((c) => c.n));
+  if (d.abstained) {
+    const why = d.abstain_reason
+      ? "The closest passages were not similar enough to your question, so the model was not asked and nothing was generated."
+      : "None of the retrieved passages answer this question, so nothing was generated.";
+    app.innerHTML = head(q) + `<div class="panel blueprint refusal">${CORNERS}<div class="kicker">No answer</div><h3>I don't know based on the documentation.</h3><p>${why} The closest matches are listed below if you want to check them yourself.</p><div class="actions"><button class="btn btn-secondary" type="button" data-act="new">Ask something else</button></div></div>` + sourcesHTML(list, new Set(), true);
+    return;
   }
-  meta.hidden = false;
-  renderSources(retrieved.length ? retrieved : d.retrieved, cited);
+  const n = citedSet.size, bad = d.invented_citations || [];
+  app.innerHTML = head(q) + `<div class="panel blueprint">${CORNERS}<div class="kicker">Answer<span class="sep">/</span>${n} source${n === 1 ? "" : "s"} cited</div><p class="answer" id="ans"></p>${bad.length ? `<div class="warn" role="alert">${ico("alert")}<div><b>${bad.length} citation${bad.length === 1 ? "" : "s"} could not be verified.</b> [${bad.join(", ")}] doesn't match any retrieved passage. Treat the related claim as unverified.</div></div>` : ""}<div class="meta">${(d.latency_ms / 1000).toFixed(1)} s · ${esc(d.strategy)} retrieval · ${list.length} passages retrieved</div><div class="actions"><button class="btn btn-secondary" type="button" data-act="new">New question</button></div></div>` + sourcesHTML(list, citedSet, false);
+  renderAnswer($("#ans"), d.answer, list.length, false);
 }
 
-$("form").addEventListener("submit", (e) => { e.preventDefault(); const q = $("q").value.trim(); if (q) ask(q); });
+/* ---- events ---- */
+app.addEventListener("submit", (e) => { if (e.target.id !== "ask") return; e.preventDefault(); const q = $("#q").value.trim(); if (q) ask(q); });
+app.addEventListener("click", (e) => {
+  const ex = e.target.closest(".ex");
+  if (ex) { ask(ex.dataset.q); return; }
+  const act = e.target.closest("[data-act]")?.dataset.act;
+  if (act === "new") { showEmpty(); $("#q").focus(); return; }
+  if (act === "retry") { ask(lastQuestion); return; }
+  const tog = e.target.closest(".tog");
+  if (tog) { const s = tog.closest(".src"); const open = s.classList.toggle("open"); tog.setAttribute("aria-expanded", open); return; }
+  const cite = e.target.closest(".cite:not(.bad)");
+  if (cite) {
+    const n = cite.dataset.c, card = document.getElementById("src-" + n);
+    document.querySelectorAll(".cite.on").forEach((c) => c.classList.remove("on"));
+    document.querySelectorAll(".src.hl").forEach((c) => c.classList.remove("hl"));
+    document.querySelectorAll('.cite[data-c="' + n + '"]').forEach((c) => c.classList.add("on"));
+    if (card) { card.classList.add("hl", "open"); card.scrollIntoView({ block: "center", behavior: matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth" }); }
+  }
+});
+document.addEventListener("keydown", (e) => {
+  if (e.key === "/" && !/^(INPUT|TEXTAREA)$/.test(document.activeElement.tagName)) { e.preventDefault(); $("#q")?.focus(); }
+});
+
+showEmpty();
+fetch("/health").then((r) => r.json()).then((h) => {
+  $("#index-note").textContent = "Index: FastAPI documentation · " + h.chunks.toLocaleString() + " passages";
+}).catch(() => { /* footer keeps its default text */ });
 </script>
 </body>
 </html>
